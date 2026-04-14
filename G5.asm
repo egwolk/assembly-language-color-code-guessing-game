@@ -20,6 +20,12 @@
     mov dx, 184fh ;row 25 col 80
     int 10h
 
+    ;instructions and feedback box
+    mov bh, 33h ;cyan bg cyan text
+    mov cx, 0104h ;row 1 col 1
+    mov dx, 174ah ;row 25 col 80
+    int 10h
+
     mov ah, 9
     lea dx, msg
     int 21h
