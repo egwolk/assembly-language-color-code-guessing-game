@@ -2,12 +2,20 @@
 .stack 100h
 .data
     player1msg  db "Player1's turn: Press Left-Right-Arrow to change color $"
-    player1msg2 db "and up down to go to the next or previous tile.$"
+    player2msg  db "Player2's turn: Press Left-Right-Arrow to change color $"
+    playermsg2 db "and up down to go to the next or previous tile.$"
+    
     color1      db 70h      ; square 1 color (grey)
     color2      db 70h      ; square 2 color (grey)
     color3      db 70h      ; square 3 color (grey)
     color4      db 70h      ; square 4 color (grey)
     selected    db 01h      ; 1 = square 1 selected, 2 = square 2 selected
+
+        turn        db 01h      ; 1 = player1 editing, 2 = player2 editing
+    p1color1    db 70h
+    p1color2    db 70h
+    p1color3    db 70h
+    p1color4    db 70h
 
 .code
     mov ax, @data
@@ -78,10 +86,19 @@ DRAW_SQUARE:
     mov dl, 12
     int 10h
 
+   cmp turn, 01h
+    jne SHOW_P2_MSG
     mov ah, 9
     lea dx, player1msg
     int 21h
+    jmp SHOW_MSG2
 
+SHOW_P2_MSG:
+    mov ah, 9
+    lea dx, player2msg
+    int 21h
+
+SHOW_MSG2:
     mov ah, 02h
     mov bh, 00h
     mov dh, 03
@@ -89,7 +106,7 @@ DRAW_SQUARE:
     int 10h
 
     mov ah, 9
-    lea dx, player1msg2
+    lea dx, playermsg2
     int 21h
 
     cmp selected, 01h
@@ -150,8 +167,36 @@ CHECK_DOWN:
 
 CHECK_ESC:
     cmp al, 1bh
-    jne KEY_LOOP
+    jne CHECK_ENTER
     jmp EXIT
+
+CHECK_ENTER:
+    cmp al, 0Dh
+    jne KEY_LOOP
+    jmp COMMIT_P1_AND_SWITCH
+
+COMMIT_P1_AND_SWITCH:
+    ; do this only once, when player1 confirms
+    cmp turn, 01h
+    jne KEY_LOOP
+
+    mov al, color1
+    mov p1color1, al
+    mov al, color2
+    mov p1color2, al
+    mov al, color3
+    mov p1color3, al
+    mov al, color4
+    mov p1color4, al
+
+    mov color1, 70h
+    mov color2, 70h
+    mov color3, 70h
+    mov color4, 70h
+    mov selected, 01h
+    mov turn, 02h
+
+    jmp DRAW_SQUARE
     
 SELECT_UP:
     cmp selected, 01h
