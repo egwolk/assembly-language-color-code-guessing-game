@@ -3,7 +3,9 @@
 .data
     player1msg  db "Player1's turn: Press Left-Right-Arrow to change color $"
     player1msg2 db "and up down to go to the next or previous tile.$"
-    color       db 70h      ; starting color (grey)
+    color1      db 70h      ; square 1 color (grey)
+    color2      db 70h      ; square 2 color (grey)
+    selected    db 01h      ; 1 = square 1 selected, 2 = square 2 selected
 
 .code
     mov ax, @data
@@ -35,12 +37,20 @@
     int 10h
 
 DRAW_SQUARE:
-    ; draw square with current color
+    ; draw square 1 with its own color
     mov ah, 6
     mov al, 00h
-    mov bh, color       ; use current color variable
+    mov bh, color1
     mov cx, 0704h
     mov dx, 0807h
+    int 10h
+
+    ; draw square 2 with its own color
+    mov ah, 6
+    mov al, 00h
+    mov bh, color2
+    mov cx, 0a04h
+    mov dx, 0b07h
     int 10h
 
     ; draw instruction text
@@ -64,7 +74,7 @@ DRAW_SQUARE:
     lea dx, player1msg2
     int 21h
 
-    ; hide cursor off-screen so it doesn't show on the square
+    ; hide cursor
     mov ah, 02h
     mov bh, 00h
     mov dh, 24
@@ -72,54 +82,104 @@ DRAW_SQUARE:
     int 10h
 
 KEY_LOOP:
-    ; wait for keypress
     mov ah, 00h
-    int 16h             ; AL = ASCII, AH = scan code
+    int 16h
 
-    ; check if extended key (arrow keys have AL = 0)
     cmp al, 00h
     jne CHECK_ESC
 
-    ; left arrow = cycle color backward
-    cmp ah, 4bh
-    je  COLOR_PREV
+    cmp ah, 4bh         ; left arrow
+    jne CHECK_RIGHT
+    jmp COLOR_PREV      ; unconditional JMP can reach farther
 
-    ; right arrow = cycle color forward
-    cmp ah, 4dh
-    je  COLOR_NEXT
+CHECK_RIGHT:
+    cmp ah, 4dh         ; right arrow
+    jne CHECK_UP
+    jmp COLOR_NEXT
 
-    jmp KEY_LOOP
+CHECK_UP:
+    cmp ah, 48h         ; up arrow
+    jne CHECK_DOWN
+    jmp SELECT_UP
+
+CHECK_DOWN:
+    cmp ah, 50h         ; down arrow
+    jne KEY_LOOP
+    jmp SELECT_DOWN
 
 CHECK_ESC:
-    cmp al, 1bh         ; ESC to exit
-    je  EXIT
+    cmp al, 1bh
+    jne KEY_LOOP
+    jmp EXIT
+    
+SELECT_UP:
+    ; move to previous square, wrap 1 -> 2
+    cmp selected, 01h
+    je  UP_WRAP
+    dec selected
+    jmp KEY_LOOP
+UP_WRAP:
+    mov selected, 02h
+    jmp KEY_LOOP
+
+SELECT_DOWN:
+    ; move to next square, wrap 2 -> 1
+    cmp selected, 02h
+    je  DOWN_WRAP
+    inc selected
+    jmp KEY_LOOP
+DOWN_WRAP:
+    mov selected, 01h
     jmp KEY_LOOP
 
 COLOR_NEXT:
-    ; add 10h to go to next background color
-    mov al, color
-    cmp al, 70h         ; if already at 7 (grey)...
-    je  WRAP_TO_GREEN   ; ...wrap to green
-    add al, 10h
-    and al, 0f0h        ; keep only the high nibble (bg color bits)
-    mov color, al
-    jmp DRAW_SQUARE
+    cmp selected, 01h
+    je  NEXT_SQ1
 
-    WRAP_TO_GREEN:
-    mov color, 20h      ; reset to green
+    ; square 2
+    mov al, color2
+    cmp al, 70h
+    je  NEXT_SQ2_WRAP
+    add al, 10h
+    mov color2, al
+    jmp DRAW_SQUARE
+NEXT_SQ2_WRAP:
+    mov color2, 20h
+    jmp DRAW_SQUARE
+NEXT_SQ1:
+    mov al, color1
+    cmp al, 70h
+    je  NEXT_SQ1_WRAP
+    add al, 10h
+    mov color1, al
+    jmp DRAW_SQUARE
+NEXT_SQ1_WRAP:
+    mov color1, 20h
     jmp DRAW_SQUARE
 
 COLOR_PREV:
-    ; subtract 10h to go to previous background color
-    mov al, color
-    cmp al, 20h         ; if at green (2)...
-    je  WRAP_TO_GREY    ; ...wrap to grey
-    sub al, 10h
-    mov color, al
-    jmp DRAW_SQUARE
+    cmp selected, 01h
+    je  PREV_SQ1
 
-WRAP_TO_GREY:
-    mov color, 70h      ; reset to grey
+    ; square 2
+    mov al, color2
+    cmp al, 20h
+    je  PREV_SQ2_WRAP
+    sub al, 10h
+    mov color2, al
+    jmp DRAW_SQUARE
+PREV_SQ2_WRAP:
+    mov color2, 70h
+    jmp DRAW_SQUARE
+PREV_SQ1:
+    mov al, color1
+    cmp al, 20h
+    je  PREV_SQ1_WRAP
+    sub al, 10h
+    mov color1, al
+    jmp DRAW_SQUARE
+PREV_SQ1_WRAP:
+    mov color1, 70h
     jmp DRAW_SQUARE
 
 EXIT:
