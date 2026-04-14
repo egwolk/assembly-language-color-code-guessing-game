@@ -74,12 +74,21 @@ DRAW_SQUARE:
     lea dx, player1msg2
     int 21h
 
-    ; hide cursor
+    cmp selected, 01h
+    jne CURSOR_SQ2
+    mov dh, 08
+    mov dl, 04
+    jmp SET_CURSOR
+    
+CURSOR_SQ2:
+    mov dh, 0Bh
+    mov dl, 04
+
+SET_CURSOR:
     mov ah, 02h
     mov bh, 00h
-    mov dh, 24
-    mov dl, 0
     int 10h
+
 
 KEY_LOOP:
     mov ah, 00h
@@ -117,20 +126,20 @@ SELECT_UP:
     cmp selected, 01h
     je  UP_WRAP
     dec selected
-    jmp KEY_LOOP
+    jmp DRAW_SQUARE
 UP_WRAP:
     mov selected, 02h
-    jmp KEY_LOOP
+    jmp DRAW_SQUARE
 
 SELECT_DOWN:
     ; move to next square, wrap 2 -> 1
     cmp selected, 02h
     je  DOWN_WRAP
     inc selected
-    jmp KEY_LOOP
+    jmp DRAW_SQUARE
 DOWN_WRAP:
     mov selected, 01h
-    jmp KEY_LOOP
+    jmp DRAW_SQUARE
 
 COLOR_NEXT:
     cmp selected, 01h
