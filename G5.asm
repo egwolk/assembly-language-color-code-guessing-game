@@ -1,9 +1,12 @@
 .model small
 .stack 100h
 .data
-    player1msg  db "Player1's turn: Press Left-Right-Arrow to change color $"
-    player2msg  db "Player2's turn: Press Left-Right-Arrow to change color $"
+    player1msg  db "Player1's turn: $"
+    player2msg  db "Player2's turn: $"
+
+    playermsg1 db "Press Left-Right-Arrow to change color $"
     playermsg2 db "and up down to go to the next or previous tile.$"
+    playermsg3 db "Press [ENTER] to confirm color code.$"
     
     color1      db 70h      ; square 1 color (grey)
     color2      db 70h      ; square 2 color (grey)
@@ -86,19 +89,48 @@ DRAW_SQUARE:
     mov dl, 12
     int 10h
 
-   cmp turn, 01h
+       cmp turn, 01h
     jne SHOW_P2_MSG
-    mov ah, 9
-    lea dx, player1msg
-    int 21h
-    jmp SHOW_MSG2
+
+    ; print player1msg in RED (34h)
+    lea si, player1msg
+    mov bl, 34h      ; red foreground
+    jmp PRINT_COLORED
 
 SHOW_P2_MSG:
+    ; print player2msg in PURPLE (35h)
+    lea si, player2msg
+    mov bl, 35h      ; purple foreground
+
+PRINT_COLORED:
+    mov al, [si]
+    cmp al, '$'
+    je PRINT_DONE
+    
+    mov ah, 09h
+    mov bh, 00h
+    mov cx, 1        ; write 1 character
+    int 10h
+    
+    inc dl           ; move cursor right
+    mov ah, 02h
+    int 10h
+    
+    inc si
+    jmp PRINT_COLORED
+
+PRINT_DONE:
+    ; now position and print playermsg1 in WHITE (after player1/2msg)
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 02
+    int 10h
+
     mov ah, 9
-    lea dx, player2msg
+    lea dx, playermsg1
     int 21h
 
-SHOW_MSG2:
+    ; print playermsg2
     mov ah, 02h
     mov bh, 00h
     mov dh, 03
@@ -107,6 +139,17 @@ SHOW_MSG2:
 
     mov ah, 9
     lea dx, playermsg2
+    int 21h
+
+    ; print playermsg3
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 04
+    mov dl, 22
+    int 10h
+
+    mov ah, 9
+    lea dx, playermsg3
     int 21h
 
     cmp selected, 01h
