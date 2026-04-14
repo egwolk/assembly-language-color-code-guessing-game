@@ -5,6 +5,8 @@
     player1msg2 db "and up down to go to the next or previous tile.$"
     color1      db 70h      ; square 1 color (grey)
     color2      db 70h      ; square 2 color (grey)
+    color3      db 70h      ; square 3 color (grey)
+    color4      db 70h      ; square 4 color (grey)
     selected    db 01h      ; 1 = square 1 selected, 2 = square 2 selected
 
 .code
@@ -53,6 +55,22 @@ DRAW_SQUARE:
     mov dx, 0b07h
     int 10h
 
+    ; draw square 3 with its own color
+    mov ah, 6
+    mov al, 00h
+    mov bh, color3
+    mov cx, 0d04h
+    mov dx, 0e07h
+    int 10h
+
+    ; draw square 4 with its own color
+    mov ah, 6
+    mov al, 00h
+    mov bh, color4
+    mov cx, 1004h
+    mov dx, 1107h
+    int 10h
+
     ; draw instruction text
     mov ah, 02h
     mov bh, 00h
@@ -75,13 +93,27 @@ DRAW_SQUARE:
     int 21h
 
     cmp selected, 01h
-    jne CURSOR_SQ2
+    jne CURSOR_CHK2
     mov dh, 08
     mov dl, 04
     jmp SET_CURSOR
     
-CURSOR_SQ2:
+CURSOR_CHK2:
+    cmp selected, 02h
+    jne CURSOR_CHK3
     mov dh, 0Bh
+    mov dl, 04
+    jmp SET_CURSOR
+
+CURSOR_CHK3:
+    cmp selected, 03h
+    jne CURSOR_SQ4
+    mov dh, 0Eh
+    mov dl, 04
+    jmp SET_CURSOR
+
+CURSOR_SQ4:
+    mov dh, 11h
     mov dl, 04
 
 SET_CURSOR:
@@ -122,73 +154,150 @@ CHECK_ESC:
     jmp EXIT
     
 SELECT_UP:
-    ; move to previous square, wrap 1 -> 2
     cmp selected, 01h
-    je  UP_WRAP
-    dec selected
+    jne UP_DEC
+    mov selected, 04h
     jmp DRAW_SQUARE
-UP_WRAP:
-    mov selected, 02h
+
+UP_DEC:
+    dec selected
     jmp DRAW_SQUARE
 
 SELECT_DOWN:
-    ; move to next square, wrap 2 -> 1
-    cmp selected, 02h
-    je  DOWN_WRAP
-    inc selected
-    jmp DRAW_SQUARE
-DOWN_WRAP:
+    cmp selected, 04h
+    jne DOWN_INC
     mov selected, 01h
+    jmp DRAW_SQUARE
+
+DOWN_INC:
+    inc selected
     jmp DRAW_SQUARE
 
 COLOR_NEXT:
     cmp selected, 01h
-    je  NEXT_SQ1
+    jne NEXT_CHECK2
+    jmp NEXT_SQ1
 
-    ; square 2
-    mov al, color2
-    cmp al, 70h
-    je  NEXT_SQ2_WRAP
-    add al, 10h
-    mov color2, al
-    jmp DRAW_SQUARE
-NEXT_SQ2_WRAP:
-    mov color2, 20h
-    jmp DRAW_SQUARE
+NEXT_CHECK2:
+    cmp selected, 02h
+    jne NEXT_CHECK3
+    jmp NEXT_SQ2
+
+NEXT_CHECK3:
+    cmp selected, 03h
+    jne NEXT_SQ4
+    jmp NEXT_SQ3
+
 NEXT_SQ1:
     mov al, color1
     cmp al, 70h
-    je  NEXT_SQ1_WRAP
+    je NEXT_SQ1_WRAP
     add al, 10h
     mov color1, al
     jmp DRAW_SQUARE
+
 NEXT_SQ1_WRAP:
     mov color1, 20h
     jmp DRAW_SQUARE
 
-COLOR_PREV:
-    cmp selected, 01h
-    je  PREV_SQ1
-
-    ; square 2
+NEXT_SQ2:
     mov al, color2
-    cmp al, 20h
-    je  PREV_SQ2_WRAP
-    sub al, 10h
+    cmp al, 70h
+    je NEXT_SQ2_WRAP
+    add al, 10h
     mov color2, al
     jmp DRAW_SQUARE
-PREV_SQ2_WRAP:
-    mov color2, 70h
+
+NEXT_SQ2_WRAP:
+    mov color2, 20h
     jmp DRAW_SQUARE
+
+NEXT_SQ3:
+    mov al, color3
+    cmp al, 70h
+    je NEXT_SQ3_WRAP
+    add al, 10h
+    mov color3, al
+    jmp DRAW_SQUARE
+
+NEXT_SQ3_WRAP:
+    mov color3, 20h
+    jmp DRAW_SQUARE
+
+NEXT_SQ4:
+    mov al, color4
+    cmp al, 70h
+    je NEXT_SQ4_WRAP
+    add al, 10h
+    mov color4, al
+    jmp DRAW_SQUARE
+
+NEXT_SQ4_WRAP:
+    mov color4, 20h
+    jmp DRAW_SQUARE
+
+
+COLOR_PREV:
+    cmp selected, 01h
+    jne PREV_CHECK2
+    jmp PREV_SQ1
+
+PREV_CHECK2:
+    cmp selected, 02h
+    jne PREV_CHECK3
+    jmp PREV_SQ2
+
+PREV_CHECK3:
+    cmp selected, 03h
+    jne PREV_SQ4
+    jmp PREV_SQ3
+
 PREV_SQ1:
     mov al, color1
     cmp al, 20h
-    je  PREV_SQ1_WRAP
+    je PREV_SQ1_WRAP
     sub al, 10h
     mov color1, al
     jmp DRAW_SQUARE
+
 PREV_SQ1_WRAP:
     mov color1, 70h
+    jmp DRAW_SQUARE
+
+PREV_SQ2:
+    mov al, color2
+    cmp al, 20h
+    je PREV_SQ2_WRAP
+    sub al, 10h
+    mov color2, al
+    jmp DRAW_SQUARE
+
+PREV_SQ2_WRAP:
+    mov color2, 70h
+    jmp DRAW_SQUARE
+
+PREV_SQ3:
+    mov al, color3
+    cmp al, 20h
+    je PREV_SQ3_WRAP
+    sub al, 10h
+    mov color3, al
+    jmp DRAW_SQUARE
+
+PREV_SQ3_WRAP:
+    mov color3, 70h
+    jmp DRAW_SQUARE
+
+PREV_SQ4:
+    mov al, color4
+    cmp al, 20h
+    je PREV_SQ4_WRAP
+    sub al, 10h
+    mov color4, al
+    jmp DRAW_SQUARE
+
+PREV_SQ4_WRAP:
+    mov color4, 70h
     jmp DRAW_SQUARE
 
 EXIT:
