@@ -32,7 +32,11 @@
     mov dx, 124bh ;end row 19 col 75
     int 10h
 
-
+    ;square 1 try 1
+    mov bh, 77h ; grey bg gey text
+    mov cx, 0704h ;start row 6 col 4
+    mov dx, 0807h ;end row 7 col 9
+    int 10h
 
     mov ah, 9
     lea dx, msg
