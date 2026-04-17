@@ -108,8 +108,13 @@ DRAW_RECT PROC
 DRAW_RECT ENDP
 
 CALC_P2_COL PROC
-    ; returns BL = 04h + (p2TryCount * 5)
+    ; returns BL = 04h + (min(p2TryCount, maxTries-1) * 5)
     mov al, p2TryCount
+    cmp al, maxTries
+    jb CPC_IN_RANGE
+    mov al, maxTries
+    dec al
+CPC_IN_RANGE:
     mov bl, al
     shl al, 1
     shl al, 1
@@ -431,11 +436,11 @@ DRAW_GAME_OVER_UI ENDP
 
 DRAW_FRAME PROC
     call DRAW_P1_SQUARES
-    call DRAW_P2_ACTIVE_SQUARES
 
     cmp gameDone, 01h
     je DF_WIN
 
+    call DRAW_P2_ACTIVE_SQUARES
     call DRAW_NORMAL_UI
     ret
 
