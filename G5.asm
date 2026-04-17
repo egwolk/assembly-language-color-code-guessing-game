@@ -412,7 +412,11 @@ DRAW_SQUARE:
     mov dx, 114bh
     int 10h
 
+    cmp gameDone, 01h
+    jne DRAW_P2_ACTIVE
+    jmp  SHOW_WIN_ONLY
 
+DRAW_P2_ACTIVE:
     ; player 2 active try column = 04h + (p2TryCount * 5)
     mov al, p2TryCount
     mov bl, al
