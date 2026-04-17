@@ -401,37 +401,57 @@ DRAW_SQUARE:
     mov dx, 114bh
     int 10h
 
-    ;player 2 squares
-    ; draw square 1 with its own color
-    mov ah, 6
+    ; player 2 active try column = 04h + (p2TryCount * 5)
+    mov al, p2TryCount
+    mov bl, al
+    shl al, 1
+    shl al, 1
+    add al, bl
+    add al, 04h
+    mov bl, al ; BL = left column
+
+    ; draw square 1
+    mov ah, 06h
     mov al, 00h
     mov bh, p2color1
-    mov cx, 0704h
-    mov dx, 0807h
+    mov ch, 07h
+    mov cl, bl
+    mov dh, 08h
+    mov dl, bl
+    add dl, 03h
     int 10h
 
-    ; draw square 2 with its own color
-    mov ah, 6
+    ; draw square 2
+    mov ah, 06h
     mov al, 00h
     mov bh, p2color2
-    mov cx, 0a04h
-    mov dx, 0b07h
+    mov ch, 0Ah
+    mov cl, bl
+    mov dh, 0Bh
+    mov dl, bl
+    add dl, 03h
     int 10h
 
-    ; draw square 3 with its own color
-    mov ah, 6
+    ; draw square 3
+    mov ah, 06h
     mov al, 00h
     mov bh, p2color3
-    mov cx, 0d04h
-    mov dx, 0e07h
+    mov ch, 0Dh
+    mov cl, bl
+    mov dh, 0Eh
+    mov dl, bl
+    add dl, 03h
     int 10h
 
-    ; draw square 4 with its own color
-    mov ah, 6
+    ; draw square 4
+    mov ah, 06h
     mov al, 00h
     mov bh, p2color4
-    mov cx, 1004h
-    mov dx, 1107h
+    mov ch, 10h
+    mov cl, bl
+    mov dh, 11h
+    mov dl, bl
+    add dl, 03h
     int 10h
 
     cmp gameDone, 01h
@@ -594,29 +614,34 @@ PRINT_DONE:
     je  P1_CURSOR
     
 P2_CURSOR:
+    ; cursor column = 04h + (p2TryCount * 5)
+    mov al, p2TryCount
+    mov bl, al
+    shl al, 1
+    shl al, 1
+    add al, bl
+    add al, 04h
+    mov dl, al
+
     cmp selected, 01h
     jne P2_CHK2
-    mov dh, 08
-    mov dl, 04
+    mov dh, 08h
     jmp SET_CURSOR
 
 P2_CHK2:
     cmp selected, 02h
     jne P2_CHK3
     mov dh, 0Bh
-    mov dl, 04
     jmp SET_CURSOR
 
 P2_CHK3:
     cmp selected, 03h
     jne P2_SQ4
     mov dh, 0Eh
-    mov dl, 04
     jmp SET_CURSOR
 
 P2_SQ4:
     mov dh, 11h
-    mov dl, 04
     jmp SET_CURSOR
 
 P1_CURSOR:
@@ -822,10 +847,14 @@ CHECK_P2_WIN:
     cmp al, maxTries
     jae P1_WINS_TRIES
 
-    ; still has tries left -> continue game, keep current p2 squares
+    ; still has tries left -> continue game on next column
     mov selected, 01h
+    mov p2color1, 70h
+    mov p2color2, 70h
+    mov p2color3, 70h
+    mov p2color4, 70h
     jmp DRAW_SQUARE
-
+    
 P2_WINS_NOW:
     mov winner, 02h
     jmp FINISH_GAME_REVEAL
