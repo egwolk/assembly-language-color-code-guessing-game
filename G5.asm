@@ -16,6 +16,10 @@
     p2CorrectColor db "Correct Color/s: $"
     p2CorrectPlacement db " | Correct Placement/s: $"
 
+    p2TryCount db 0
+    p2CorrectColorCount db 0
+    p2CorrectPlacementCount db 0
+
     gameDone db 00h
     winner db 00h    ; 1 = p1, 2 = p2
     
@@ -64,31 +68,6 @@
     mov cx, 0604h
     mov dx, 124bh
     int 10h
-
-    ; print "Player 2 stats"
-    mov ah, 02h
-    mov bh, 00h
-    mov dh, 20
-    mov dl, 36
-    int 10h
-
-    mov ah, 09h
-    lea dx, p2Trys
-    int 21h
-
-    mov ah, 02h
-    mov bh, 00h
-    mov dh, 22
-    mov dl, 20
-    int 10h
-
-    mov ah, 09h
-    lea dx, p2CorrectColor
-    int 21h
-
-    mov ah, 09h
-    lea dx, p2CorrectPlacement
-    int 21h
 
 DRAW_SQUARE:
     ;player 1 squares
@@ -187,7 +166,7 @@ SHOW_WIN_ONLY:
     lea dx, uiMsg
     int 21h
 
-    ; print winner line
+    ; print winner under Game Over
     mov ah, 02h
     mov bh, 00h
     mov dh, 03
@@ -195,16 +174,49 @@ SHOW_WIN_ONLY:
     int 10h
 
     cmp winner, 02h
-    jne PRINT_ONLY_P1
+    jne SHOW_P1_WIN
     mov ah, 09h
     lea dx, player2Win
     int 21h
-    jmp RESULT_LOOP
+    jmp SHOW_STATS
 
-PRINT_ONLY_P1:
+SHOW_P1_WIN:
     mov ah, 09h
     lea dx, player1Win
     int 21h
+
+SHOW_STATS:
+    ; print player 2 stats
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 20
+    mov dl, 36
+    int 10h
+
+    mov ah, 09h
+    lea dx, p2Trys
+    int 21h
+    mov al, p2TryCount
+    call PRINT_DECIMAL
+
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 22
+    mov dl, 20
+    int 10h
+
+    mov ah, 09h
+    lea dx, p2CorrectColor
+    int 21h
+    mov al, p2CorrectColorCount
+    call PRINT_DECIMAL
+
+    mov ah, 09h
+    lea dx, p2CorrectPlacement
+    int 21h
+    mov al, p2CorrectPlacementCount
+    call PRINT_DECIMAL
+
     jmp RESULT_LOOP
 
 NORMAL_UI:
@@ -338,25 +350,8 @@ SET_CURSOR:
     int 10h
 
     cmp gameDone, 01h
-    jne KEY_LOOP
-
-    mov ah, 02h
-    mov bh, 00h
-    mov dh, 21
-    mov dl, 30
-    int 10h
-
-    cmp winner, 02h
-    jne PRINT_P1_WIN
-    mov ah, 09h
-    lea dx, player2Win
-    int 21h
-    jmp RESULT_LOOP
-
-PRINT_P1_WIN:
-    mov ah, 09h
-    lea dx, player1Win
-    int 21h
+    je  RESULT_LOOP
+    jmp KEY_LOOP
 
 RESULT_LOOP:
     mov ah, 00h
@@ -443,25 +438,99 @@ COMMIT_P2_AND_COMPARE:
     mov al, p1color4
     mov color4, al
 
-    ; compare p2 guess vs p1 code
+    ; record stats
+    inc p2TryCount
+    mov p2CorrectColorCount, 0
+    mov p2CorrectPlacementCount, 0
+
     mov al, p2color1
     cmp al, p1color1
-    jne P1_WINS
+    jne P2_S1_CHK_COLOR
+    inc p2CorrectPlacementCount
+    inc p2CorrectColorCount
+    jmp P2_S2
+
+P2_S1_CHK_COLOR:
+    cmp al, p1color2
+    je  P2_S1_COLOR
+    cmp al, p1color3
+    je  P2_S1_COLOR
+    cmp al, p1color4
+    je  P2_S1_COLOR
+    jmp P2_S2
+
+P2_S1_COLOR:
+    inc p2CorrectColorCount
+
+P2_S2:
     mov al, p2color2
     cmp al, p1color2
-    jne P1_WINS
+    jne P2_S2_CHK_COLOR
+    inc p2CorrectPlacementCount
+    inc p2CorrectColorCount
+    jmp P2_S3
+
+P2_S2_CHK_COLOR:
+    cmp al, p1color1
+    je  P2_S2_COLOR
+    cmp al, p1color3
+    je  P2_S2_COLOR
+    cmp al, p1color4
+    je  P2_S2_COLOR
+    jmp P2_S3
+
+P2_S2_COLOR:
+    inc p2CorrectColorCount
+
+P2_S3:
     mov al, p2color3
     cmp al, p1color3
-    jne P1_WINS
+    jne P2_S3_CHK_COLOR
+    inc p2CorrectPlacementCount
+    inc p2CorrectColorCount
+    jmp P2_S4
+
+P2_S3_CHK_COLOR:
+    cmp al, p1color1
+    je  P2_S3_COLOR
+    cmp al, p1color2
+    je  P2_S3_COLOR
+    cmp al, p1color4
+    je  P2_S3_COLOR
+    jmp P2_S4
+
+P2_S3_COLOR:
+    inc p2CorrectColorCount
+
+P2_S4:
     mov al, p2color4
     cmp al, p1color4
-    jne P1_WINS
+    jne P2_S4_CHK_COLOR
+    inc p2CorrectPlacementCount
+    inc p2CorrectColorCount
+    jmp CHECK_P2_WIN
 
-    mov winner, 02h
+P2_S4_CHK_COLOR:
+    cmp al, p1color1
+    je  P2_S4_COLOR
+    cmp al, p1color2
+    je  P2_S4_COLOR
+    cmp al, p1color3
+    je  P2_S4_COLOR
+    jmp CHECK_P2_WIN
+
+P2_S4_COLOR:
+    inc p2CorrectColorCount
+
+CHECK_P2_WIN:
+    cmp p2CorrectPlacementCount, 04h
+    je  P2_WINS
+
+    mov winner, 01h
     jmp FINISH_GAME
 
-P1_WINS:
-    mov winner, 01h
+P2_WINS:
+    mov winner, 02h
 
 FINISH_GAME:
     mov gameDone, 01h
@@ -697,6 +766,27 @@ PREV_P2_4:
 PREV_P2_4_WRAP:
     mov p2color4, 70h
     jmp DRAW_SQUARE
+
+PRINT_DECIMAL:
+    aam
+    add ax, 3030h
+    cmp ah, '0'
+    jne PRINT_TWO_DIGITS
+
+    mov dl, al
+    mov ah, 02h
+    int 21h
+    ret
+
+PRINT_TWO_DIGITS:
+    mov dl, ah
+    mov ah, 02h
+    int 21h
+
+    mov dl, al
+    mov ah, 02h
+    int 21h
+    ret
 
 EXIT:
     mov ah, 4ch
