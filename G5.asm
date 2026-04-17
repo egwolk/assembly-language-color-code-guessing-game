@@ -38,10 +38,10 @@
     p1color3    db 70h
     p1color4    db 70h
 
-    p2color1    db 70h
-    p2color2    db 70h
-    p2color3    db 70h
-    p2color4    db 70h
+    p2color1    db 00h
+    p2color2    db 00h
+    p2color3    db 00h
+    p2color4    db 00h
 
 .code
     mov ax, @data
@@ -85,7 +85,7 @@ START_GAME:
     ; draw square 1 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0709h
     mov dx, 080ch
     int 10h
@@ -93,7 +93,7 @@ START_GAME:
     ; draw square 2 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0a09h
     mov dx, 0b0ch
     int 10h
@@ -101,7 +101,7 @@ START_GAME:
     ; draw square 3 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0d09h
     mov dx, 0e0ch
     int 10h
@@ -109,7 +109,7 @@ START_GAME:
     ; draw square 4 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 1009h
     mov dx, 110ch
     int 10h
@@ -118,7 +118,7 @@ START_GAME:
     ; draw square 1 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 070eh
     mov dx, 0811h
     int 10h
@@ -126,7 +126,7 @@ START_GAME:
     ; draw square 2 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0a0eh
     mov dx, 0b11h
     int 10h
@@ -134,7 +134,7 @@ START_GAME:
     ; draw square 3 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0d0eh
     mov dx, 0e11h
     int 10h
@@ -142,7 +142,7 @@ START_GAME:
     ; draw square 4 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 100eh
     mov dx, 1111h
     int 10h
@@ -151,7 +151,7 @@ START_GAME:
     ; draw square 1 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0713h
     mov dx, 0816h
     int 10h
@@ -159,7 +159,7 @@ START_GAME:
     ; draw square 2 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0a13h
     mov dx, 0b16h
     int 10h
@@ -167,7 +167,7 @@ START_GAME:
     ; draw square 3 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0d13h
     mov dx, 0e16h
     int 10h
@@ -175,7 +175,7 @@ START_GAME:
     ; draw square 4 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 1013h
     mov dx, 1116h
     int 10h
@@ -184,7 +184,7 @@ START_GAME:
     ; draw square 1 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0718h
     mov dx, 081bh
     int 10h
@@ -192,7 +192,7 @@ START_GAME:
     ; draw square 2 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0a18h
     mov dx, 0b1bh
     int 10h
@@ -200,7 +200,7 @@ START_GAME:
     ; draw square 3 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0d18h
     mov dx, 0e1bh
     int 10h
@@ -208,7 +208,7 @@ START_GAME:
     ; draw square 4 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 1018h
     mov dx, 111bh
     int 10h
@@ -217,7 +217,7 @@ START_GAME:
     ; draw square 1 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 071dh
     mov dx, 0820h
     int 10h
@@ -225,7 +225,7 @@ START_GAME:
     ; draw square 2 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0a1dh
     mov dx, 0b20h
     int 10h
@@ -233,7 +233,7 @@ START_GAME:
     ; draw square 3 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0d1dh
     mov dx, 0e20h
     int 10h
@@ -241,7 +241,7 @@ START_GAME:
     ; draw square 4 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 101dh
     mov dx, 1120h
     int 10h
@@ -250,7 +250,7 @@ START_GAME:
     ; draw square 1 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0722h
     mov dx, 0825h
     int 10h
@@ -258,7 +258,7 @@ START_GAME:
     ; draw square 2 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0a22h
     mov dx, 0b25h
     int 10h
@@ -266,7 +266,7 @@ START_GAME:
     ; draw square 3 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0d22h
     mov dx, 0e25h
     int 10h
@@ -274,7 +274,7 @@ START_GAME:
     ; draw square 4 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 1022h
     mov dx, 1125h
     int 10h
@@ -283,7 +283,7 @@ START_GAME:
     ; draw square 1 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0727h
     mov dx, 082ah
     int 10h
@@ -291,7 +291,7 @@ START_GAME:
     ; draw square 2 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0a27h
     mov dx, 0b2ah
     int 10h
@@ -299,7 +299,7 @@ START_GAME:
     ; draw square 3 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0d27h
     mov dx, 0e2ah
     int 10h
@@ -307,7 +307,7 @@ START_GAME:
     ; draw square 4 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 1027h
     mov dx, 112ah
     int 10h
@@ -316,7 +316,7 @@ START_GAME:
     ; draw square 1 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 072ch
     mov dx, 082fh
     int 10h
@@ -324,7 +324,7 @@ START_GAME:
     ; draw square 2 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0a2ch
     mov dx, 0b2fh
     int 10h
@@ -332,7 +332,7 @@ START_GAME:
     ; draw square 3 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0d2ch
     mov dx, 0e2fh
     int 10h
@@ -340,7 +340,7 @@ START_GAME:
     ; draw square 4 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 102ch
     mov dx, 112fh
     int 10h
@@ -349,7 +349,7 @@ START_GAME:
     ; draw square 1 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0731h
     mov dx, 0834h
     int 10h
@@ -357,7 +357,7 @@ START_GAME:
     ; draw square 2 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0a31h
     mov dx, 0b34h
     int 10h
@@ -365,7 +365,7 @@ START_GAME:
     ; draw square 3 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 0d31h
     mov dx, 0e34h
     int 10h
@@ -373,7 +373,7 @@ START_GAME:
     ; draw square 4 
     mov ah, 6
     mov al, 00h
-    mov bh, 70h
+    mov bh, 00h
     mov cx, 1031h
     mov dx, 1134h
     int 10h
@@ -411,6 +411,7 @@ DRAW_SQUARE:
     mov cx, 1048h
     mov dx, 114bh
     int 10h
+
 
     ; player 2 active try column = 04h + (p2TryCount * 5)
     mov al, p2TryCount
@@ -1159,6 +1160,59 @@ PRINT_TWO_DIGITS:
     int 21h
     ret
 
+DRAW_P2_ALL_BLACK:
+mov bl, 04h ; first try column
+mov si, 10 ; 10 tries
+BLACK_COL_LOOP:
+; square 1
+mov ah, 06h
+mov al, 00h
+mov bh, 00h
+mov ch, 07h
+mov cl, bl
+mov dh, 08h
+mov dl, bl
+add dl, 03h
+int 10h
+
+; square 2
+mov ah, 06h
+mov al, 00h
+mov bh, 00h
+mov ch, 0Ah
+mov cl, bl
+mov dh, 0Bh
+mov dl, bl
+add dl, 03h
+int 10h
+
+; square 3
+mov ah, 06h
+mov al, 00h
+mov bh, 00h
+mov ch, 0Dh
+mov cl, bl
+mov dh, 0Eh
+mov dl, bl
+add dl, 03h
+int 10h
+
+; square 4
+mov ah, 06h
+mov al, 00h
+mov bh, 00h
+mov ch, 10h
+mov cl, bl
+mov dh, 11h
+mov dl, bl
+add dl, 03h
+int 10h
+
+add bl, 05h ; next try column
+dec si
+jnz BLACK_COL_LOOP
+ret
+
 RESET_GAME_STATE:
     mov p2TryCount, 0
     mov p2CorrectColorCount, 0
@@ -1180,10 +1234,10 @@ RESET_GAME_STATE:
     mov p1color3, 70h
     mov p1color4, 70h
 
-    mov p2color1, 70h
-    mov p2color2, 70h
-    mov p2color3, 70h
-    mov p2color4, 70h
+    mov p2color1, 00h
+    mov p2color2, 00h
+    mov p2color3, 00h
+    mov p2color4, 00h
     ret
 
 CLEAR_SCREEN:
