@@ -156,26 +156,26 @@ PRINT_DONE:
     cmp selected, 01h
     jne CURSOR_CHK2
     mov dh, 08
-    mov dl, 04
+    mov dl, 48h
     jmp SET_CURSOR
     
 CURSOR_CHK2:
     cmp selected, 02h
     jne CURSOR_CHK3
     mov dh, 0Bh
-    mov dl, 04
+    mov dl, 48h
     jmp SET_CURSOR
 
 CURSOR_CHK3:
     cmp selected, 03h
     jne CURSOR_SQ4
     mov dh, 0Eh
-    mov dl, 04
+    mov dl, 48h
     jmp SET_CURSOR
 
 CURSOR_SQ4:
     mov dh, 11h
-    mov dl, 04
+    mov dl, 48h
 
 SET_CURSOR:
     mov ah, 02h
