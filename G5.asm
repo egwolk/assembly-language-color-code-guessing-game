@@ -50,36 +50,37 @@
     int 10h
 
 DRAW_SQUARE:
+    ;player 1 squares
     ; draw square 1 with its own color
     mov ah, 6
     mov al, 00h
     mov bh, color1
-    mov cx, 0704h
-    mov dx, 0807h
+    mov cx, 0748h
+    mov dx, 084bh
     int 10h
 
     ; draw square 2 with its own color
     mov ah, 6
     mov al, 00h
     mov bh, color2
-    mov cx, 0a04h
-    mov dx, 0b07h
+    mov cx, 0a48h
+    mov dx, 0b4bh
     int 10h
 
     ; draw square 3 with its own color
     mov ah, 6
     mov al, 00h
     mov bh, color3
-    mov cx, 0d04h
-    mov dx, 0e07h
+    mov cx, 0d48h
+    mov dx, 0e4bh
     int 10h
 
     ; draw square 4 with its own color
     mov ah, 6
     mov al, 00h
     mov bh, color4
-    mov cx, 1004h
-    mov dx, 1107h
+    mov cx, 1048h
+    mov dx, 114bh
     int 10h
 
     ; draw instruction text
