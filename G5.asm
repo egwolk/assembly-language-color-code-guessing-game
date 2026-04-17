@@ -12,6 +12,10 @@
     player1Win db "Player 1 Wins$"
     player2Win db "Player 2 Wins$"
 
+    p2Trys db "Try/s: $"
+    p2CorrectColor db "Correct Color/s: $"
+    p2CorrectPlacement db " | Correct Placement/s: $"
+
     gameDone db 00h
     winner db 00h    ; 1 = p1, 2 = p2
     
@@ -60,6 +64,31 @@
     mov cx, 0604h
     mov dx, 124bh
     int 10h
+
+    ; print "Player 2 stats"
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 20
+    mov dl, 36
+    int 10h
+
+    mov ah, 09h
+    lea dx, p2Trys
+    int 21h
+
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 22
+    mov dl, 20
+    int 10h
+
+    mov ah, 09h
+    lea dx, p2CorrectColor
+    int 21h
+
+    mov ah, 09h
+    lea dx, p2CorrectPlacement
+    int 21h
 
 DRAW_SQUARE:
     ;player 1 squares
