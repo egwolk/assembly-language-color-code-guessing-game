@@ -697,7 +697,7 @@ RESULT_LOOP:
     int 16h
     cmp al, 1Bh
     jne RESULT_LOOP
-    jmp EXIT
+    jmp CLEAR_SCREEN
 
 KEY_LOOP:
     mov ah, 00h
