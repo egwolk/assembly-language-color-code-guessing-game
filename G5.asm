@@ -70,6 +70,303 @@
     mov dx, 124bh
     int 10h
 
+    ;player 2 squares try col 2
+    ; draw square 1 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0709h
+    mov dx, 080ch
+    int 10h
+
+    ; draw square 2 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0a09h
+    mov dx, 0b0ch
+    int 10h
+
+    ; draw square 3 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0d09h
+    mov dx, 0e0ch
+    int 10h
+
+    ; draw square 4 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 1009h
+    mov dx, 110ch
+    int 10h
+
+    ;player 2 squares try col 3
+    ; draw square 1 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 070eh
+    mov dx, 0811h
+    int 10h
+
+    ; draw square 2 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0a0eh
+    mov dx, 0b11h
+    int 10h
+
+    ; draw square 3 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0d0eh
+    mov dx, 0e11h
+    int 10h
+
+    ; draw square 4 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 100eh
+    mov dx, 1111h
+    int 10h
+
+    ;player 2 squares try col 4
+    ; draw square 1 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0713h
+    mov dx, 0816h
+    int 10h
+
+    ; draw square 2 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0a13h
+    mov dx, 0b16h
+    int 10h
+
+    ; draw square 3 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0d13h
+    mov dx, 0e16h
+    int 10h
+
+    ; draw square 4 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 1013h
+    mov dx, 1116h
+    int 10h
+
+    ;player 2 squares try col 5
+    ; draw square 1 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0718h
+    mov dx, 081bh
+    int 10h
+
+    ; draw square 2 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0a18h
+    mov dx, 0b1bh
+    int 10h
+
+    ; draw square 3 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0d18h
+    mov dx, 0e1bh
+    int 10h
+
+    ; draw square 4 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 1018h
+    mov dx, 111bh
+    int 10h
+
+    ;player 2 squares try col 6
+    ; draw square 1 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 071dh
+    mov dx, 0820h
+    int 10h
+
+    ; draw square 2 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0a1dh
+    mov dx, 0b20h
+    int 10h
+
+    ; draw square 3 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0d1dh
+    mov dx, 0e20h
+    int 10h
+
+    ; draw square 4 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 101dh
+    mov dx, 1120h
+    int 10h
+
+    ;player 2 squares try col 7
+    ; draw square 1 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0722h
+    mov dx, 0825h
+    int 10h
+
+    ; draw square 2 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0a22h
+    mov dx, 0b25h
+    int 10h
+
+    ; draw square 3 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0d22h
+    mov dx, 0e25h
+    int 10h
+
+    ; draw square 4 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 1022h
+    mov dx, 1125h
+    int 10h
+
+    ;player 2 squares try col 8
+    ; draw square 1 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0727h
+    mov dx, 082ah
+    int 10h
+
+    ; draw square 2 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0a27h
+    mov dx, 0b2ah
+    int 10h
+
+    ; draw square 3 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0d27h
+    mov dx, 0e2ah
+    int 10h
+
+    ; draw square 4 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 1027h
+    mov dx, 112ah
+    int 10h
+
+    ;player 2 squares try col 9
+    ; draw square 1 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 072ch
+    mov dx, 082fh
+    int 10h
+
+    ; draw square 2 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0a2ch
+    mov dx, 0b2fh
+    int 10h
+
+    ; draw square 3 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0d2ch
+    mov dx, 0e2fh
+    int 10h
+
+    ; draw square 4 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 102ch
+    mov dx, 112fh
+    int 10h
+
+    ;player 2 squares try col 10
+    ; draw square 1 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0731h
+    mov dx, 0834h
+    int 10h
+
+    ; draw square 2 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0a31h
+    mov dx, 0b34h
+    int 10h
+
+    ; draw square 3 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 0d31h
+    mov dx, 0e34h
+    int 10h
+
+    ; draw square 4 
+    mov ah, 6
+    mov al, 00h
+    mov bh, 70h
+    mov cx, 1031h
+    mov dx, 1134h
+    int 10h
+
 DRAW_SQUARE:
     ;player 1 squares
     ; draw square 1 with its own color
