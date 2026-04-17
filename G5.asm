@@ -1,44 +1,59 @@
 .model small
 .stack 100h
-
 .data
+    ; =========================
+    ; UI TEXT STRINGS
+    ; =========================
     player1msg  db "Player1's turn: $"
     player2msg  db "Player2's turn: $"
 
+    ; Instructions shown to players
     playermsg1 db "Press Left-Right-Arrow to change color $"
     playermsg2 db "and up down to go to the next or previous tile.$"
     playermsg3 db "Press [ENTER] to confirm color code.$"
 
+    ; Game over messages
     uiMsg db "Game Over$"
     player1Win db "Player 1 Wins$"
     player2Win db "Player 2 Wins$"
 
     continue db "Press [ESC] to quit | Press [ENTER] to play again$"
 
+    ; Player 2 statistics display
     p2Trys db "Try/s: $"
     p2CorrectColor db "Correct Color/s: $"
     p2CorrectPlacement db " | Correct Placement/s: $"
 
-    p2TryCount db 0
-    p2CorrectColorCount db 0
-    p2CorrectPlacementCount db 0
+    ; =========================
+    ; GAME STATE VARIABLES
+    ; =========================
+    p2TryCount db 0                   ; Number of attempts made by Player 2
+    p2CorrectColorCount db 0          ; Number of correct colors guessed
+    p2CorrectPlacementCount db 0      ; Number of correct positions guessed
 
-    gameDone db 00h
-    winner db 00h
-    maxTries db 10
+    gameDone db 00h                   ; 1 if game is finished
+    winner db 00h                     ; 1 = Player1, 2 = Player2
+    maxTries db 10                    ; Maximum number of attempts allowed
 
+    ; =========================
+    ; COLOR STORAGE (ATTRIBUTES)
+    ; =========================
     color1      db 70h
     color2      db 70h
     color3      db 70h
     color4      db 70h
-    selected    db 01h
+    selected db 01h                   ; Currently selected tile (1–4)
 
+    ; Turn tracking (1 = Player1, 2 = Player2)
     turn        db 01h
+
+    ; Player 1's secret color combination
     p1color1    db 70h
     p1color2    db 70h
     p1color3    db 70h
     p1color4    db 70h
 
+    ; Player 2's current guess
     p2color1    db 00h
     p2color2    db 00h
     p2color3    db 00h
@@ -46,37 +61,47 @@
 
 .code
 start:
+    ; Initialize data segment
     mov ax, @data
     mov ds, ax
 
+    ; Start the main game loop
     call GAME_MAIN
 
+    ; Exit program
     mov ah, 4ch
     int 21h
 
+; =========================================================
+; MAIN GAME CONTROLLER
+; Handles full game lifecycle (restart, loop, exit)
+; =========================================================
 GAME_MAIN PROC
 RESTART_GAME:
-    call RESET_GAME_STATE
-    call INIT_SCREEN
-    call DRAW_STATIC_LAYOUT
-    call DRAW_P2_ALL_BLACK
+    call RESET_GAME_STATE      ; Reset all variables
+    call INIT_SCREEN           ; Set video mode
+    call DRAW_STATIC_LAYOUT    ; Draw background UI
+    call DRAW_P2_ALL_BLACK     ; Draw hidden grid for guesses
 
 FRAME_LOOP:
-    call DRAW_FRAME
+    call DRAW_FRAME            ; Render current frame
 
+    ; Check if game is finished
     cmp gameDone, 01h
     je GAME_OVER_INPUT
 
+    ; Handle gameplay input
     call HANDLE_GAME_KEYS         ; AL: 0=continue, 2=exit
-    cmp al, 02h
+    cmp al, 02h                   ; ESC pressed → exit
     je EXIT_GAME
     jmp FRAME_LOOP
 
 GAME_OVER_INPUT:
+    ; Handle input after game ends
     call HANDLE_RESULT_KEYS       ; AL: 0=wait, 1=restart, 2=exit
-    cmp al, 01h
+    cmp al, 01h                   ; ENTER → restart
     je RESTART_GAME
-    cmp al, 02h
+    cmp al, 02h                   ; ESC → exit
     je EXIT_GAME
     jmp FRAME_LOOP
 
@@ -85,20 +110,32 @@ EXIT_GAME:
     ret
 GAME_MAIN ENDP
 
+; =========================================================
+; SCREEN INITIALIZATION
+; Sets text mode and enables cursor
+; =========================================================
 INIT_SCREEN PROC
-    ; show text cursor
+    ; show cursor
     mov ah, 01h
     mov ch, 06h
     mov cl, 07h
     int 10h
 
-    ; mode 3 text
+    ; Set video mode 3 (80x25 text)
     mov ah, 00h
     mov al, 03h
     int 10h
     ret
 INIT_SCREEN ENDP
 
+; =========================================================
+; DRAW_RECT
+; Draws a colored rectangle using BIOS scroll function
+; Input:
+;   BH = color attribute
+;   CH,CL = top-left row/col
+;   DH,DL = bottom-right row/col
+; =========================================================
 DRAW_RECT PROC
     ; expects: BH=color attr, CH=row1, CL=col1, DH=row2, DL=col2
     mov ah, 06h
@@ -107,6 +144,11 @@ DRAW_RECT PROC
     ret
 DRAW_RECT ENDP
 
+; =========================================================
+; CALC_P2_COL
+; Calculates horizontal position of Player 2 guess column
+; Each attempt shifts 5 columns to the right
+; =========================================================
 CALC_P2_COL PROC
     ; returns BL = 04h + (min(p2TryCount, maxTries-1) * 5)
     mov al, p2TryCount
@@ -118,12 +160,16 @@ CPC_IN_RANGE:
     mov bl, al
     shl al, 1
     shl al, 1
-    add al, bl
-    add al, 04h
+    add al, bl          ; multiply by 5
+    add al, 04h         ; base offset
     mov bl, al
     ret
 CALC_P2_COL ENDP
 
+; =========================================================
+; DRAW_STATIC_LAYOUT
+; Draws the main UI structure (background, grid, panel)
+; =========================================================
 DRAW_STATIC_LAYOUT PROC
     ; background
     mov bh, 10h
@@ -141,7 +187,7 @@ DRAW_STATIC_LAYOUT PROC
     mov dl, 4bh
     call DRAW_RECT
 
-    ; grid area
+    ; game grid area
     mov bh, 10h
     mov ch, 06h
     mov cl, 04h
@@ -151,7 +197,12 @@ DRAW_STATIC_LAYOUT PROC
     ret
 DRAW_STATIC_LAYOUT ENDP
 
+; =========================================================
+; DRAW_P1_SQUARES
+; Displays Player 1's chosen colors (right side)
+; =========================================================
 DRAW_P1_SQUARES PROC
+    ; Draw 4 vertically aligned squares
     mov bh, color1
     mov ch, 07h
     mov cl, 48h
@@ -468,48 +519,59 @@ HRK_WAIT:
     ret
 HANDLE_RESULT_KEYS ENDP
 
+
+; =========================================================
+; HANDLE_GAME_KEYS
+; Processes keyboard input during gameplay
+; Arrow keys → navigation & color change
+; ENTER → confirm
+; ESC → exit
+; =========================================================
 HANDLE_GAME_KEYS PROC
     ; AL: 0 continue, 2 exit
     mov ah, 00h
     int 16h
 
+    ; Extended keys (arrows)
     cmp al, 00h
     jne HGK_ASCII
 
     cmp ah, 4bh
     jne HGK_RIGHT
-    call COLOR_PREV
+    call COLOR_PREV       ; Left arrow
     xor al, al
     ret
 HGK_RIGHT:
     cmp ah, 4dh
     jne HGK_UP
-    call COLOR_NEXT
+    call COLOR_NEXT       ; Right arrow
     xor al, al
     ret
 HGK_UP:
     cmp ah, 48h
     jne HGK_DOWN
-    call SELECT_UP
+    call SELECT_UP        ; Move selection up
     xor al, al
     ret
 HGK_DOWN:
     cmp ah, 50h
     jne HGK_CONT
-    call SELECT_DOWN
+    call SELECT_DOWN      ; Move selection down
     xor al, al
     ret
 
+; ASCII keys
 HGK_ASCII:
     cmp al, 1bh
     jne HGK_ENTER
-    mov al, 02h
+    mov al, 02h           ; ESC → exit
     ret
 
 HGK_ENTER:
     cmp al, 0dh
     jne HGK_CONT
 
+    ; ENTER → confirm input
     cmp turn, 01h
     jne HGK_P2
     call COMMIT_P1_AND_SWITCH
@@ -525,7 +587,12 @@ HGK_CONT:
     ret
 HANDLE_GAME_KEYS ENDP
 
+; =========================================================
+; COMMIT_P1_AND_SWITCH
+; Saves Player 1's chosen colors and switches to Player 2
+; =========================================================
 COMMIT_P1_AND_SWITCH PROC
+    ; Copy selected colors into secret code
     mov al, color1
     mov p1color1, al
     mov al, color2
@@ -535,25 +602,40 @@ COMMIT_P1_AND_SWITCH PROC
     mov al, color4
     mov p1color4, al
 
+    ; Clear visible colors (hide solution)
     mov color1, 00h
     mov color2, 00h
     mov color3, 00h
     mov color4, 00h
 
+    ; Initialize Player 2 guess slots
     mov p2color1, 70h
     mov p2color2, 70h
     mov p2color3, 70h
     mov p2color4, 70h
 
     mov selected, 01h
-    mov turn, 02h
+    mov turn, 02h         ; Switch turn
     ret
 COMMIT_P1_AND_SWITCH ENDP
 
+; =========================================================
+; COMMIT_P2_AND_COMPARE
+; Evaluates Player 2 guess vs Player 1 solution
+; Updates stats and determines winner
+; =========================================================
 COMMIT_P2_AND_COMPARE PROC
     inc p2TryCount
+
+    ; Reset counters
     mov p2CorrectColorCount, 0
     mov p2CorrectPlacementCount, 0
+
+    ; ---- Comparison logic per square ----
+    ; Checks exact match (position + color)
+    ; Then checks color-only match
+    ; (Same logic repeated for 4 slots)
+    ; → increments placement and/or color counters
 
     ; square 1
     mov al, p2color1
@@ -623,6 +705,7 @@ C2C_S4_COLOR_ONLY:
 C2C_S4_HIT:
     inc p2CorrectColorCount
 
+; ---- Win conditions ---- 
 C2C_CHECK:
     cmp p2CorrectPlacementCount, 04h
     je C2C_P2_WIN
@@ -631,6 +714,7 @@ C2C_CHECK:
     cmp al, maxTries
     jae C2C_P1_WIN
 
+    ; Reset guess row if not finished
     mov selected, 01h
     mov p2color1, 70h
     mov p2color2, 70h
@@ -649,6 +733,10 @@ C2C_P1_WIN:
     ret
 COMMIT_P2_AND_COMPARE ENDP
 
+; =========================================================
+; FINISH_GAME_REVEAL
+; Reveals Player 1's secret combination at end of game
+; =========================================================
 FINISH_GAME_REVEAL PROC
     mov al, p1color1
     mov color1, al
@@ -956,6 +1044,10 @@ DPAB_COL_LOOP:
     ret
 DRAW_P2_ALL_BLACK ENDP
 
+; =========================================================
+; RESET_GAME_STATE
+; Initializes all variables for a new game
+; =========================================================
 RESET_GAME_STATE PROC
     mov p2TryCount, 0
     mov p2CorrectColorCount, 0
@@ -984,6 +1076,10 @@ RESET_GAME_STATE PROC
     ret
 RESET_GAME_STATE ENDP
 
+; =========================================================
+; CLEAR_SCREEN
+; Clears entire screen using BIOS interrupt
+; =========================================================
 CLEAR_SCREEN PROC
     mov ah, 06h
     mov al, 00h
