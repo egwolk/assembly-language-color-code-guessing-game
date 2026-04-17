@@ -46,6 +46,15 @@
 .code
     mov ax, @data
     mov ds, ax
+    
+START_GAME:
+    call RESET_GAME_STATE
+
+    ; show text cursor again (it was hidden on game-over screen)
+    mov ah, 01h
+    mov ch, 06h
+    mov cl, 07h
+    int 10h
 
     ; set video mode
     mov ah, 00h
@@ -695,9 +704,15 @@ SET_CURSOR:
 RESULT_LOOP:
     mov ah, 00h
     int 16h
+
     cmp al, 1Bh
-    jne RESULT_LOOP
+    jne RESULT_CHECK_ENTER
     jmp CLEAR_SCREEN
+
+RESULT_CHECK_ENTER:
+    cmp al, 0Dh
+    jne RESULT_LOOP
+    jmp START_GAME
 
 KEY_LOOP:
     mov ah, 00h
@@ -1142,6 +1157,33 @@ PRINT_TWO_DIGITS:
     mov dl, bl        ; restore ones digit
     mov ah, 02h
     int 21h
+    ret
+
+RESET_GAME_STATE:
+    mov p2TryCount, 0
+    mov p2CorrectColorCount, 0
+    mov p2CorrectPlacementCount, 0
+
+    mov gameDone, 00h
+    mov winner, 00h
+
+    mov selected, 01h
+    mov turn, 01h
+
+    mov color1, 70h
+    mov color2, 70h
+    mov color3, 70h
+    mov color4, 70h
+
+    mov p1color1, 70h
+    mov p1color2, 70h
+    mov p1color3, 70h
+    mov p1color4, 70h
+
+    mov p2color1, 70h
+    mov p2color2, 70h
+    mov p2color3, 70h
+    mov p2color4, 70h
     ret
 
 CLEAR_SCREEN:
