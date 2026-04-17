@@ -6,7 +6,7 @@
 - Mount folder in DOSBOX with: 
 ```
 MOUNT X C:/Path
-X
+X:
 ```
 - assemble in DOSBOX: `tasm g5`
 - Build EXE file with `tlink g5`
