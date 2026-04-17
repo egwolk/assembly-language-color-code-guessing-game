@@ -7,6 +7,13 @@
     playermsg1 db "Press Left-Right-Arrow to change color $"
     playermsg2 db "and up down to go to the next or previous tile.$"
     playermsg3 db "Press [ENTER] to confirm color code.$"
+
+    uiMsg db "Game Over$"
+    player1Win db "Player 1 Wins$"
+    player2Win db "Player 2 Wins$"
+
+    gameDone db 00h
+    winner db 00h    ; 1 = p1, 2 = p2
     
     color1      db 70h      ; square 1 color (grey)
     color2      db 70h      ; square 2 color (grey)
@@ -121,8 +128,57 @@ DRAW_SQUARE:
     mov dx, 1107h
     int 10h
 
-    
+    cmp gameDone, 01h
+    je  SHOW_WIN_ONLY
+    jmp NORMAL_UI
 
+SHOW_WIN_ONLY:
+    ; clear instruction area (rows 1..4, cols 4..75)
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 30h
+    mov cx, 0104h
+    mov dx, 044Bh
+    int 10h
+
+    ; hide text cursor on game-over screen
+    mov ah, 01h
+    mov ch, 20h
+    mov cl, 00h
+    int 10h
+
+    ; print "Game Over"
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 02
+    mov dl, 35
+    int 10h
+
+    mov ah, 09h
+    lea dx, uiMsg
+    int 21h
+
+    ; print winner line
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 03
+    mov dl, 33
+    int 10h
+
+    cmp winner, 02h
+    jne PRINT_ONLY_P1
+    mov ah, 09h
+    lea dx, player2Win
+    int 21h
+    jmp RESULT_LOOP
+
+PRINT_ONLY_P1:
+    mov ah, 09h
+    lea dx, player1Win
+    int 21h
+    jmp RESULT_LOOP
+
+NORMAL_UI:
     ; draw instruction text
     mov ah, 02h
     mov bh, 00h
@@ -197,61 +253,88 @@ PRINT_DONE:
     je  P1_CURSOR
     
 P2_CURSOR:
-cmp selected, 01h
-jne P2_CHK2
-mov dh, 08
-mov dl, 04
-jmp SET_CURSOR
+    cmp selected, 01h
+    jne P2_CHK2
+    mov dh, 08
+    mov dl, 04
+    jmp SET_CURSOR
 
 P2_CHK2:
-cmp selected, 02h
-jne P2_CHK3
-mov dh, 0Bh
-mov dl, 04
-jmp SET_CURSOR
+    cmp selected, 02h
+    jne P2_CHK3
+    mov dh, 0Bh
+    mov dl, 04
+    jmp SET_CURSOR
 
 P2_CHK3:
-cmp selected, 03h
-jne P2_SQ4
-mov dh, 0Eh
-mov dl, 04
-jmp SET_CURSOR
+    cmp selected, 03h
+    jne P2_SQ4
+    mov dh, 0Eh
+    mov dl, 04
+    jmp SET_CURSOR
 
 P2_SQ4:
-mov dh, 11h
-mov dl, 04
-jmp SET_CURSOR
+    mov dh, 11h
+    mov dl, 04
+    jmp SET_CURSOR
 
 P1_CURSOR:
-cmp selected, 01h
-jne P1_CHK2
-mov dh, 08
-mov dl, 48h
-jmp SET_CURSOR
+    cmp selected, 01h
+    jne P1_CHK2
+    mov dh, 08
+    mov dl, 48h
+    jmp SET_CURSOR
 
 P1_CHK2:
-cmp selected, 02h
-jne P1_CHK3
-mov dh, 0Bh
-mov dl, 48h
-jmp SET_CURSOR
+    cmp selected, 02h
+    jne P1_CHK3
+    mov dh, 0Bh
+    mov dl, 48h
+    jmp SET_CURSOR
 
 P1_CHK3:
-cmp selected, 03h
-jne P1_SQ4
-mov dh, 0Eh
-mov dl, 48h
-jmp SET_CURSOR
+    cmp selected, 03h
+    jne P1_SQ4
+    mov dh, 0Eh
+    mov dl, 48h
+    jmp SET_CURSOR
 
 P1_SQ4:
-mov dh, 11h
-mov dl, 48h
+    mov dh, 11h
+    mov dl, 48h
 
 SET_CURSOR:
-mov ah, 02h
-mov bh, 00h
-int 10h
+    mov ah, 02h
+    mov bh, 00h
+    int 10h
 
+    cmp gameDone, 01h
+    jne KEY_LOOP
+
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 21
+    mov dl, 30
+    int 10h
+
+    cmp winner, 02h
+    jne PRINT_P1_WIN
+    mov ah, 09h
+    lea dx, player2Win
+    int 21h
+    jmp RESULT_LOOP
+
+PRINT_P1_WIN:
+    mov ah, 09h
+    lea dx, player1Win
+    int 21h
+
+RESULT_LOOP:
+    mov ah, 00h
+    int 16h
+    cmp al, 1Bh
+    jne RESULT_LOOP
+    jmp EXIT
 
 KEY_LOOP:
     mov ah, 00h
@@ -287,7 +370,9 @@ CHECK_ESC:
 CHECK_ENTER:
     cmp al, 0Dh
     jne KEY_LOOP
-    jmp COMMIT_P1_AND_SWITCH
+    cmp turn, 01h
+    je COMMIT_P1_AND_SWITCH
+    jmp COMMIT_P2_AND_COMPARE
 
 COMMIT_P1_AND_SWITCH:
     ; do this only once, when player1 confirms
@@ -303,10 +388,10 @@ COMMIT_P1_AND_SWITCH:
     mov al, color4
     mov p1color4, al
 
-    mov color1, 70h
-    mov color2, 70h
-    mov color3, 70h
-    mov color4, 70h
+    mov color1, 00h
+    mov color2, 00h
+    mov color3, 00h
+    mov color4, 00h
 
     mov p2color1, 70h
     mov p2color2, 70h
@@ -316,6 +401,41 @@ COMMIT_P1_AND_SWITCH:
     mov selected, 01h
     mov turn, 02h
 
+    jmp DRAW_SQUARE
+
+COMMIT_P2_AND_COMPARE:
+    ; reveal saved player1 code on player1 UI
+    mov al, p1color1
+    mov color1, al
+    mov al, p1color2
+    mov color2, al
+    mov al, p1color3
+    mov color3, al
+    mov al, p1color4
+    mov color4, al
+
+    ; compare p2 guess vs p1 code
+    mov al, p2color1
+    cmp al, p1color1
+    jne P1_WINS
+    mov al, p2color2
+    cmp al, p1color2
+    jne P1_WINS
+    mov al, p2color3
+    cmp al, p1color3
+    jne P1_WINS
+    mov al, p2color4
+    cmp al, p1color4
+    jne P1_WINS
+
+    mov winner, 02h
+    jmp FINISH_GAME
+
+P1_WINS:
+    mov winner, 01h
+
+FINISH_GAME:
+    mov gameDone, 01h
     jmp DRAW_SQUARE
     
 SELECT_UP:
