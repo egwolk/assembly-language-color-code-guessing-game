@@ -12,6 +12,8 @@
     player1Win db "Player 1 Wins$"
     player2Win db "Player 2 Wins$"
 
+    continue db "Press [ESC] to quit | Press [ENTER] to play again$"
+
     p2Trys db "Try/s: $"
     p2CorrectColor db "Correct Color/s: $"
     p2CorrectPlacement db " | Correct Placement/s: $"
@@ -526,11 +528,23 @@ SHOW_WIN_ONLY:
     mov ah, 09h
     lea dx, player2Win
     int 21h
-    jmp SHOW_STATS
+    jmp SHOW_CONTINUE
 
 SHOW_P1_WIN:
     mov ah, 09h
     lea dx, player1Win
+    int 21h
+
+SHOW_CONTINUE:
+    ; print "Continue"
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 04
+    mov dl, 15
+    int 10h
+
+    mov ah, 09h
+    lea dx, continue
     int 21h
 
 SHOW_STATS:
