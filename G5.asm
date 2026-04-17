@@ -728,7 +728,7 @@ CHECK_DOWN:
 CHECK_ESC:
     cmp al, 1bh
     jne CHECK_ENTER
-    jmp EXIT
+    jmp CLEAR_SCREEN
 
 CHECK_ENTER:
     cmp al, 0Dh
@@ -1143,6 +1143,16 @@ PRINT_TWO_DIGITS:
     mov ah, 02h
     int 21h
     ret
+
+CLEAR_SCREEN:
+    ; scroll entire screen up (clear it)
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 07h
+    mov cx, 0000h
+    mov dx, 184fh
+    int 10h
+    jmp EXIT
 
 EXIT:
     mov ah, 4ch
