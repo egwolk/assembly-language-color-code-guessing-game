@@ -20,6 +20,11 @@
     p1color3    db 70h
     p1color4    db 70h
 
+    p2color1    db 70h
+    p2color2    db 70h
+    p2color3    db 70h
+    p2color4    db 70h
+
 .code
     mov ax, @data
     mov ds, ax
@@ -83,6 +88,41 @@ DRAW_SQUARE:
     mov dx, 114bh
     int 10h
 
+    ;player 2 squares
+    ; draw square 1 with its own color
+    mov ah, 6
+    mov al, 00h
+    mov bh, p2color1
+    mov cx, 0704h
+    mov dx, 0807h
+    int 10h
+
+    ; draw square 2 with its own color
+    mov ah, 6
+    mov al, 00h
+    mov bh, p2color2
+    mov cx, 0a04h
+    mov dx, 0b07h
+    int 10h
+
+    ; draw square 3 with its own color
+    mov ah, 6
+    mov al, 00h
+    mov bh, p2color3
+    mov cx, 0d04h
+    mov dx, 0e07h
+    int 10h
+
+    ; draw square 4 with its own color
+    mov ah, 6
+    mov al, 00h
+    mov bh, p2color4
+    mov cx, 1004h
+    mov dx, 1107h
+    int 10h
+
+    
+
     ; draw instruction text
     mov ah, 02h
     mov bh, 00h
@@ -90,7 +130,7 @@ DRAW_SQUARE:
     mov dl, 12
     int 10h
 
-       cmp turn, 01h
+    cmp turn, 01h
     jne SHOW_P2_MSG
 
     ; print player1msg in RED (34h)
@@ -153,34 +193,64 @@ PRINT_DONE:
     lea dx, playermsg3
     int 21h
 
-    cmp selected, 01h
-    jne CURSOR_CHK2
-    mov dh, 08
-    mov dl, 48h
-    jmp SET_CURSOR
+    cmp turn, 01h
+    je  P1_CURSOR
     
-CURSOR_CHK2:
-    cmp selected, 02h
-    jne CURSOR_CHK3
-    mov dh, 0Bh
-    mov dl, 48h
-    jmp SET_CURSOR
+P2_CURSOR:
+cmp selected, 01h
+jne P2_CHK2
+mov dh, 08
+mov dl, 04
+jmp SET_CURSOR
 
-CURSOR_CHK3:
-    cmp selected, 03h
-    jne CURSOR_SQ4
-    mov dh, 0Eh
-    mov dl, 48h
-    jmp SET_CURSOR
+P2_CHK2:
+cmp selected, 02h
+jne P2_CHK3
+mov dh, 0Bh
+mov dl, 04
+jmp SET_CURSOR
 
-CURSOR_SQ4:
-    mov dh, 11h
-    mov dl, 48h
+P2_CHK3:
+cmp selected, 03h
+jne P2_SQ4
+mov dh, 0Eh
+mov dl, 04
+jmp SET_CURSOR
+
+P2_SQ4:
+mov dh, 11h
+mov dl, 04
+jmp SET_CURSOR
+
+P1_CURSOR:
+cmp selected, 01h
+jne P1_CHK2
+mov dh, 08
+mov dl, 48h
+jmp SET_CURSOR
+
+P1_CHK2:
+cmp selected, 02h
+jne P1_CHK3
+mov dh, 0Bh
+mov dl, 48h
+jmp SET_CURSOR
+
+P1_CHK3:
+cmp selected, 03h
+jne P1_SQ4
+mov dh, 0Eh
+mov dl, 48h
+jmp SET_CURSOR
+
+P1_SQ4:
+mov dh, 11h
+mov dl, 48h
 
 SET_CURSOR:
-    mov ah, 02h
-    mov bh, 00h
-    int 10h
+mov ah, 02h
+mov bh, 00h
+int 10h
 
 
 KEY_LOOP:
@@ -237,6 +307,12 @@ COMMIT_P1_AND_SWITCH:
     mov color2, 70h
     mov color3, 70h
     mov color4, 70h
+
+    mov p2color1, 70h
+    mov p2color2, 70h
+    mov p2color3, 70h
+    mov p2color4, 70h
+    
     mov selected, 01h
     mov turn, 02h
 
@@ -263,130 +339,214 @@ DOWN_INC:
     jmp DRAW_SQUARE
 
 COLOR_NEXT:
+    cmp turn, 01h
+    je  NEXT_P1
+    jmp NEXT_P2
+
+NEXT_P1:
     cmp selected, 01h
-    jne NEXT_CHECK2
-    jmp NEXT_SQ1
-
-NEXT_CHECK2:
-    cmp selected, 02h
-    jne NEXT_CHECK3
-    jmp NEXT_SQ2
-
-NEXT_CHECK3:
-    cmp selected, 03h
-    jne NEXT_SQ4
-    jmp NEXT_SQ3
-
-NEXT_SQ1:
+    jne NEXT_P1_CHK2
     mov al, color1
     cmp al, 70h
-    je NEXT_SQ1_WRAP
+    je  NEXT_P1_1_WRAP
     add al, 10h
     mov color1, al
     jmp DRAW_SQUARE
-
-NEXT_SQ1_WRAP:
+NEXT_P1_1_WRAP:
     mov color1, 20h
     jmp DRAW_SQUARE
 
-NEXT_SQ2:
+NEXT_P1_CHK2:
+    cmp selected, 02h
+    jne NEXT_P1_CHK3
     mov al, color2
     cmp al, 70h
-    je NEXT_SQ2_WRAP
+    je  NEXT_P1_2_WRAP
     add al, 10h
     mov color2, al
     jmp DRAW_SQUARE
-
-NEXT_SQ2_WRAP:
+NEXT_P1_2_WRAP:
     mov color2, 20h
     jmp DRAW_SQUARE
 
-NEXT_SQ3:
+NEXT_P1_CHK3:
+    cmp selected, 03h
+    jne NEXT_P1_4
     mov al, color3
     cmp al, 70h
-    je NEXT_SQ3_WRAP
+    je  NEXT_P1_3_WRAP
     add al, 10h
     mov color3, al
     jmp DRAW_SQUARE
-
-NEXT_SQ3_WRAP:
+NEXT_P1_3_WRAP:
     mov color3, 20h
     jmp DRAW_SQUARE
 
-NEXT_SQ4:
+NEXT_P1_4:
     mov al, color4
     cmp al, 70h
-    je NEXT_SQ4_WRAP
+    je  NEXT_P1_4_WRAP
     add al, 10h
     mov color4, al
     jmp DRAW_SQUARE
-
-NEXT_SQ4_WRAP:
+NEXT_P1_4_WRAP:
     mov color4, 20h
+    jmp DRAW_SQUARE
+
+NEXT_P2:
+    cmp selected, 01h
+    jne NEXT_P2_CHK2
+    mov al, p2color1
+    cmp al, 70h
+    je  NEXT_P2_1_WRAP
+    add al, 10h
+    mov p2color1, al
+    jmp DRAW_SQUARE
+NEXT_P2_1_WRAP:
+    mov p2color1, 20h
+    jmp DRAW_SQUARE
+
+NEXT_P2_CHK2:
+    cmp selected, 02h
+    jne NEXT_P2_CHK3
+    mov al, p2color2
+    cmp al, 70h
+    je  NEXT_P2_2_WRAP
+    add al, 10h
+    mov p2color2, al
+    jmp DRAW_SQUARE
+NEXT_P2_2_WRAP:
+    mov p2color2, 20h
+    jmp DRAW_SQUARE
+
+NEXT_P2_CHK3:
+    cmp selected, 03h
+    jne NEXT_P2_4
+    mov al, p2color3
+    cmp al, 70h
+    je  NEXT_P2_3_WRAP
+    add al, 10h
+    mov p2color3, al
+    jmp DRAW_SQUARE
+NEXT_P2_3_WRAP:
+    mov p2color3, 20h
+    jmp DRAW_SQUARE
+
+NEXT_P2_4:
+    mov al, p2color4
+    cmp al, 70h
+    je  NEXT_P2_4_WRAP
+    add al, 10h
+    mov p2color4, al
+    jmp DRAW_SQUARE
+NEXT_P2_4_WRAP:
+    mov p2color4, 20h
     jmp DRAW_SQUARE
 
 
 COLOR_PREV:
+    cmp turn, 01h
+    je  PREV_P1
+    jmp PREV_P2
+
+PREV_P1:
     cmp selected, 01h
-    jne PREV_CHECK2
-    jmp PREV_SQ1
-
-PREV_CHECK2:
-    cmp selected, 02h
-    jne PREV_CHECK3
-    jmp PREV_SQ2
-
-PREV_CHECK3:
-    cmp selected, 03h
-    jne PREV_SQ4
-    jmp PREV_SQ3
-
-PREV_SQ1:
+    jne PREV_P1_CHK2
     mov al, color1
     cmp al, 20h
-    je PREV_SQ1_WRAP
+    je  PREV_P1_1_WRAP
     sub al, 10h
     mov color1, al
     jmp DRAW_SQUARE
-
-PREV_SQ1_WRAP:
+PREV_P1_1_WRAP:
     mov color1, 70h
     jmp DRAW_SQUARE
 
-PREV_SQ2:
+PREV_P1_CHK2:
+    cmp selected, 02h
+    jne PREV_P1_CHK3
     mov al, color2
     cmp al, 20h
-    je PREV_SQ2_WRAP
+    je  PREV_P1_2_WRAP
     sub al, 10h
     mov color2, al
     jmp DRAW_SQUARE
-
-PREV_SQ2_WRAP:
+PREV_P1_2_WRAP:
     mov color2, 70h
     jmp DRAW_SQUARE
 
-PREV_SQ3:
+PREV_P1_CHK3:
+    cmp selected, 03h
+    jne PREV_P1_4
     mov al, color3
     cmp al, 20h
-    je PREV_SQ3_WRAP
+    je  PREV_P1_3_WRAP
     sub al, 10h
     mov color3, al
     jmp DRAW_SQUARE
-
-PREV_SQ3_WRAP:
+PREV_P1_3_WRAP:
     mov color3, 70h
     jmp DRAW_SQUARE
 
-PREV_SQ4:
+PREV_P1_4:
     mov al, color4
     cmp al, 20h
-    je PREV_SQ4_WRAP
+    je  PREV_P1_4_WRAP
     sub al, 10h
     mov color4, al
     jmp DRAW_SQUARE
-
-PREV_SQ4_WRAP:
+PREV_P1_4_WRAP:
     mov color4, 70h
+    jmp DRAW_SQUARE
+
+PREV_P2:
+    cmp selected, 01h
+    jne PREV_P2_CHK2
+    mov al, p2color1
+    cmp al, 20h
+    je  PREV_P2_1_WRAP
+    sub al, 10h
+    mov p2color1, al
+    jmp DRAW_SQUARE
+PREV_P2_1_WRAP:
+    mov p2color1, 70h
+    jmp DRAW_SQUARE
+
+PREV_P2_CHK2:
+    cmp selected, 02h
+    jne PREV_P2_CHK3
+    mov al, p2color2
+    cmp al, 20h
+    je  PREV_P2_2_WRAP
+    sub al, 10h
+    mov p2color2, al
+    jmp DRAW_SQUARE
+PREV_P2_2_WRAP:
+    mov p2color2, 70h
+    jmp DRAW_SQUARE
+
+PREV_P2_CHK3:
+    cmp selected, 03h
+    jne PREV_P2_4
+    mov al, p2color3
+    cmp al, 20h
+    je  PREV_P2_3_WRAP
+    sub al, 10h
+    mov p2color3, al
+    jmp DRAW_SQUARE
+PREV_P2_3_WRAP:
+    mov p2color3, 70h
+    jmp DRAW_SQUARE
+
+PREV_P2_4:
+    mov al, p2color4
+    cmp al, 20h
+    je  PREV_P2_4_WRAP
+    sub al, 10h
+    mov p2color4, al
+    jmp DRAW_SQUARE
+PREV_P2_4_WRAP:
+    mov p2color4, 70h
     jmp DRAW_SQUARE
 
 EXIT:
