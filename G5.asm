@@ -21,8 +21,8 @@
 
     ; Player 2 statistics display
     p2Trys db "Try/s: $"
-    p2CorrectColor db "Correct Color/s: $"
-    p2CorrectPlacement db " | Correct Placement/s: $"
+    p2CorrectPlacement db "Correct color+placement/s: $"
+    p2WrongPlacement db " | Correct color wrong placement/s: $"
 
     ; =========================
     ; GAME STATE VARIABLES
@@ -30,6 +30,7 @@
     p2TryCount db 0                   ; Number of attempts made by Player 2
     p2CorrectColorCount db 0          ; Number of correct colors guessed
     p2CorrectPlacementCount db 0      ; Number of correct positions guessed
+    p2WrongPlacementCount db 0
 
     gameDone db 00h                   ; 1 if game is finished
     winner db 00h                     ; 1 = Player1, 2 = Player2
@@ -286,19 +287,19 @@ DRAW_P2_STATS PROC
     mov ah, 02h
     mov bh, 00h
     mov dh, 22
-    mov dl, 20
+    mov dl, 7
     int 10h
-
-    mov ah, 09h
-    lea dx, p2CorrectColor
-    int 21h
-    mov al, p2CorrectColorCount
-    call PRINT_DECIMAL
 
     mov ah, 09h
     lea dx, p2CorrectPlacement
     int 21h
     mov al, p2CorrectPlacementCount
+    call PRINT_DECIMAL
+
+    mov ah, 09h
+    lea dx, p2WrongPlacement
+    int 21h
+    mov al, p2WrongPlacementCount
     call PRINT_DECIMAL
     ret
 DRAW_P2_STATS ENDP
@@ -630,6 +631,7 @@ COMMIT_P2_AND_COMPARE PROC
     ; Reset counters
     mov p2CorrectColorCount, 0
     mov p2CorrectPlacementCount, 0
+    mov p2WrongPlacementCount, 0
 
     ; ---- Comparison logic per square ----
     ; Checks exact match (position + color)
@@ -709,6 +711,10 @@ C2C_S4_HIT:
 C2C_CHECK:
     cmp p2CorrectPlacementCount, 04h
     je C2C_P2_WIN
+
+    mov al, p2CorrectColorCount
+    sub al, p2CorrectPlacementCount
+    mov p2WrongPlacementCount, al
 
     mov al, p2TryCount
     cmp al, maxTries
@@ -1052,6 +1058,7 @@ RESET_GAME_STATE PROC
     mov p2TryCount, 0
     mov p2CorrectColorCount, 0
     mov p2CorrectPlacementCount, 0
+    mov p2WrongPlacementCount, 0
 
     mov gameDone, 00h
     mov winner, 00h
