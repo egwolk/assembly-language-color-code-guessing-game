@@ -513,6 +513,7 @@ HANDLE_RESULT_KEYS PROC
 HRK_SPACE:
     cmp al, 20h
     jne HRK_WAIT
+    call BEEP_CONFIRM
     mov al, 01h
     ret
 HRK_WAIT:
