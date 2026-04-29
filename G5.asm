@@ -573,6 +573,8 @@ HGK_ENTER:
     jne HGK_CONT
 
     ; ENTER → confirm input
+    call BEEP_CONFIRM
+
     cmp turn, 01h
     jne HGK_P2
     call COMMIT_P1_AND_SWITCH
@@ -1186,5 +1188,46 @@ BL_WAIT:
     pop ax
     ret
 BEEP_LOW ENDP
+
+; =========================================================
+; BEEP_CONFIRM
+; Plays a middle-pitched beep (for confirm/Enter)
+; =========================================================
+BEEP_CONFIRM PROC
+    push ax
+    push bx
+    push cx
+    push dx
+
+    ; Program timer chip for middle frequency
+    mov al, 0b6h            ; Timer control byte
+    out 43h, al
+    
+    mov ax, 1200            ; Frequency divisor (middle pitch)
+    out 42h, al
+    mov al, ah
+    out 42h, al
+
+    ; Enable speaker
+    in al, 61h
+    or al, 03h
+    out 61h, al
+
+    ; Delay loop (duration of sound)
+    mov cx, 8000
+BC_WAIT:
+    loop BC_WAIT
+
+    ; Disable speaker
+    in al, 61h
+    and al, 0fch
+    out 61h, al
+
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+BEEP_CONFIRM ENDP
 
 END start
