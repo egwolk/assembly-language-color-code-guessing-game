@@ -778,6 +778,8 @@ SD_INC:
 SELECT_DOWN ENDP
 
 COLOR_NEXT PROC
+    call BEEP_HIGH              ; Play high beep when right arrow pressed
+    
     cmp turn, 01h
     jne CN_P2
 
@@ -882,6 +884,8 @@ CN_P2_4_WRAP:
 COLOR_NEXT ENDP
 
 COLOR_PREV PROC
+    call BEEP_LOW               ; Play low beep when left arrow pressed
+    
     cmp turn, 01h
     jne CP_P2
 
@@ -1096,5 +1100,87 @@ CLEAR_SCREEN PROC
     int 10h
     ret
 CLEAR_SCREEN ENDP
+
+; =========================================================
+; BEEP_HIGH
+; Plays a high-pitched beep (for right arrow)
+; =========================================================
+BEEP_HIGH PROC
+    push ax
+    push bx
+    push cx
+    push dx
+
+    ; Program timer chip for high frequency (higher pitch)
+    mov al, 0b6h            ; Timer control byte
+    out 43h, al
+    
+    mov ax, 1000            ; Frequency divisor (smaller = higher pitch)
+    out 42h, al
+    mov al, ah
+    out 42h, al
+
+    ; Enable speaker
+    in al, 61h
+    or al, 03h
+    out 61h, al
+
+    ; Delay loop (duration of sound)
+    mov cx, 8000
+BH_WAIT:
+    loop BH_WAIT
+
+    ; Disable speaker
+    in al, 61h
+    and al, 0fch
+    out 61h, al
+
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+BEEP_HIGH ENDP
+
+; =========================================================
+; BEEP_LOW
+; Plays a low-pitched beep (for left arrow)
+; =========================================================
+BEEP_LOW PROC
+    push ax
+    push bx
+    push cx
+    push dx
+
+    ; Program timer chip for low frequency (lower pitch)
+    mov al, 0b6h            ; Timer control byte
+    out 43h, al
+    
+    mov ax, 1500            ; Frequency divisor (larger = lower pitch)
+    out 42h, al
+    mov al, ah
+    out 42h, al
+
+    ; Enable speaker
+    in al, 61h
+    or al, 03h
+    out 61h, al
+
+    ; Delay loop (duration of sound)
+    mov cx, 8000
+BL_WAIT:
+    loop BL_WAIT
+
+    ; Disable speaker
+    in al, 61h
+    and al, 0fch
+    out 61h, al
+
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+BEEP_LOW ENDP
 
 END start
