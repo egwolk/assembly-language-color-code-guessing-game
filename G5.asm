@@ -21,8 +21,8 @@
 
     ; Player 2 statistics display
     p2Trys db "Try/s: $"
-    p2CorrectPlacement db "Correct color+placement/s: $"
-    p2WrongPlacement db " | Correct color wrong placement/s: $"
+    p2CorrectPlacement db "Exact placement: $"
+    p2WrongPlacement db " | Misplaced: $"
 
     ; =========================
     ; GAME STATE VARIABLES
@@ -287,7 +287,7 @@ DRAW_P2_STATS PROC
     mov ah, 02h
     mov bh, 00h
     mov dh, 22
-    mov dl, 7
+    mov dl, 24
     int 10h
 
     mov ah, 09h
