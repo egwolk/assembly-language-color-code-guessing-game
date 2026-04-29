@@ -758,6 +758,8 @@ FINISH_GAME_REVEAL PROC
 FINISH_GAME_REVEAL ENDP
 
 SELECT_UP PROC
+    call BEEP_HIGH              ; Play high beep when up arrow pressed
+    
     cmp selected, 01h
     jne SU_DEC
     mov selected, 04h
@@ -768,6 +770,8 @@ SU_DEC:
 SELECT_UP ENDP
 
 SELECT_DOWN PROC
+    call BEEP_LOW               ; Play low beep when down arrow pressed
+    
     cmp selected, 04h
     jne SD_INC
     mov selected, 01h
