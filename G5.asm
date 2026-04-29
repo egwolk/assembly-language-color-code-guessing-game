@@ -17,7 +17,7 @@
     player1Win db "Player 1 Wins$"
     player2Win db "Player 2 Wins$"
 
-    continue db "Press [ESC] to quit | Press [ENTER] to play again$"
+    continue db "Press [ESC] to quit | Press [SPACE] to play again$"
 
     ; Player 2 statistics display
     p2Trys db "Try/s: $"
@@ -507,11 +507,11 @@ HANDLE_RESULT_KEYS PROC
     int 16h
 
     cmp al, 1bh
-    jne HRK_ENTER
+    jne HRK_SPACE
     mov al, 02h
     ret
-HRK_ENTER:
-    cmp al, 0dh
+HRK_SPACE:
+    cmp al, 20h
     jne HRK_WAIT
     mov al, 01h
     ret
