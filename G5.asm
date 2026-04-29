@@ -290,17 +290,25 @@ DRAW_P2_STATS PROC
     mov dl, 24
     int 10h
 
-    mov ah, 09h
-    lea dx, p2CorrectPlacement
-    int 21h
+    lea si, p2CorrectPlacement
+    mov bl, 32h
+    call PRINT_COLORED_STR
     mov al, p2CorrectPlacementCount
-    call PRINT_DECIMAL
+    mov bl, 32h
+    call PRINT_DECIMAL_COLORED
 
-    mov ah, 09h
-    lea dx, p2WrongPlacement
-    int 21h
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 22
+    mov dl, 42
+    int 10h
+
+    lea si, p2WrongPlacement
+    mov bl, 36h
+    call PRINT_COLORED_STR
     mov al, p2WrongPlacementCount
-    call PRINT_DECIMAL
+    mov bl, 36h
+    call PRINT_DECIMAL_COLORED
     ret
 DRAW_P2_STATS ENDP
 
@@ -1018,6 +1026,56 @@ PD_TWO:
     int 21h
     ret
 PRINT_DECIMAL ENDP
+
+PRINT_DECIMAL_COLORED PROC
+    ; Input: AL = number (0-255), BL = color attribute
+    ; Prints decimal number with specified color
+    ; Assumes cursor is positioned
+    push ax
+    aam                 ; Convert AL to BCD: AH = tens, AL = ones
+    add ax, 3030h       ; Convert to ASCII
+    
+    cmp ah, '0'
+    jne PDC_TWO_DIGIT
+    
+    ; Single digit (only ones place)
+    mov dl, al
+    mov ah, 09h
+    mov bh, 00h
+    mov cx, 1
+    int 10h
+    inc dl
+    mov ah, 02h
+    int 10h
+    pop ax
+    ret
+    
+PDC_TWO_DIGIT:
+    ; Two digits (tens and ones)
+    mov cl, al          ; Save ones digit (ASCII)
+    mov dl, ah          ; dl = tens digit (ASCII)
+    mov ah, 09h
+    mov bh, 00h
+    mov cx, 1
+    int 10h             ; Write tens digit
+    
+    inc dl
+    mov ah, 02h
+    int 10h             ; Move cursor
+    
+    mov dl, cl          ; dl = ones digit (ASCII)
+    mov ah, 09h
+    mov bh, 00h
+    mov cx, 1
+    int 10h             ; Write ones digit
+    
+    inc dl
+    mov ah, 02h
+    int 10h             ; Move cursor
+    
+    pop ax
+    ret
+PRINT_DECIMAL_COLORED ENDP
 
 DRAW_P2_ALL_BLACK PROC
     mov bl, 04h
