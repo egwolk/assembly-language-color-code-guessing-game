@@ -14,8 +14,8 @@
 
     ; Game over messages
     uiMsg db "Game Over$"
-    player1Win db "Player 1 Wins$"
-    player2Win db "Player 2 Wins$"
+    player1Win db "Player1 Wins$"
+    player2Win db "Player2 Wins$"
 
     continue db "Press [ESC] to quit | Press [SPACE] to play again$"
 
@@ -471,14 +471,14 @@ DRAW_GAME_OVER_UI PROC
     int 10h
     cmp winner, 02h
     jne DGO_P1
-    mov ah, 09h
-    lea dx, player2Win
-    int 21h
+    lea si, player2Win
+    mov bl, 35h
+    call PRINT_COLORED_STR
     jmp DGO_CONT
 DGO_P1:
-    mov ah, 09h
-    lea dx, player1Win
-    int 21h
+    lea si, player1Win
+    mov bl, 34h
+    call PRINT_COLORED_STR
 
 DGO_CONT:
     mov ah, 02h
