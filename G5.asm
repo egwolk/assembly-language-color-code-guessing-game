@@ -60,6 +60,16 @@
     p2color3    db 00h
     p2color4    db 00h
 
+    ; Temporary match flags used while scoring Player 2's guess
+    p1slotUsed1 db 0
+    p1slotUsed2 db 0
+    p1slotUsed3 db 0
+    p1slotUsed4 db 0
+    p2slotUsed1 db 0
+    p2slotUsed2 db 0
+    p2slotUsed3 db 0
+    p2slotUsed4 db 0
+
 .code
 start:
     ; Initialize data segment
@@ -644,88 +654,214 @@ COMMIT_P2_AND_COMPARE PROC
     mov p2CorrectPlacementCount, 0
     mov p2WrongPlacementCount, 0
 
-    ; ---- Comparison logic per square ----
-    ; Checks exact match (position + color)
-    ; Then checks color-only match
-    ; (Same logic repeated for 4 slots)
-    ; → increments placement and/or color counters
+    ; Clear temporary match flags
+    mov p1slotUsed1, 00h
+    mov p1slotUsed2, 00h
+    mov p1slotUsed3, 00h
+    mov p1slotUsed4, 00h
+    mov p2slotUsed1, 00h
+    mov p2slotUsed2, 00h
+    mov p2slotUsed3, 00h
+    mov p2slotUsed4, 00h
 
-    ; square 1
+    ; First pass: exact placement matches
     mov al, p2color1
     cmp al, p1color1
-    jne C2C_S1_COLOR_ONLY
+    jne C2C_EXACT_2
     inc p2CorrectPlacementCount
     inc p2CorrectColorCount
-    jmp C2C_S2
-C2C_S1_COLOR_ONLY:
-    cmp al, p1color2
-    je C2C_S1_HIT
-    cmp al, p1color3
-    je C2C_S1_HIT
-    cmp al, p1color4
-    jne C2C_S2
-C2C_S1_HIT:
-    inc p2CorrectColorCount
-
-C2C_S2:
+    mov p1slotUsed1, 01h
+    mov p2slotUsed1, 01h
+C2C_EXACT_2:
     mov al, p2color2
     cmp al, p1color2
-    jne C2C_S2_COLOR_ONLY
+    jne C2C_EXACT_3
     inc p2CorrectPlacementCount
     inc p2CorrectColorCount
-    jmp C2C_S3
-C2C_S2_COLOR_ONLY:
-    cmp al, p1color1
-    je C2C_S2_HIT
-    cmp al, p1color3
-    je C2C_S2_HIT
-    cmp al, p1color4
-    jne C2C_S3
-C2C_S2_HIT:
-    inc p2CorrectColorCount
-
-C2C_S3:
+    mov p1slotUsed2, 01h
+    mov p2slotUsed2, 01h
+C2C_EXACT_3:
     mov al, p2color3
     cmp al, p1color3
-    jne C2C_S3_COLOR_ONLY
+    jne C2C_EXACT_4
     inc p2CorrectPlacementCount
     inc p2CorrectColorCount
-    jmp C2C_S4
-C2C_S3_COLOR_ONLY:
-    cmp al, p1color1
-    je C2C_S3_HIT
-    cmp al, p1color2
-    je C2C_S3_HIT
-    cmp al, p1color4
-    jne C2C_S4
-C2C_S3_HIT:
-    inc p2CorrectColorCount
-
-C2C_S4:
+    mov p1slotUsed3, 01h
+    mov p2slotUsed3, 01h
+C2C_EXACT_4:
     mov al, p2color4
     cmp al, p1color4
-    jne C2C_S4_COLOR_ONLY
+    jne C2C_MISPLACED_1
     inc p2CorrectPlacementCount
     inc p2CorrectColorCount
-    jmp C2C_CHECK
-C2C_S4_COLOR_ONLY:
+    mov p1slotUsed4, 01h
+    mov p2slotUsed4, 01h
+
+    ; Second pass: misplaced matches only use remaining unmatched slots
+C2C_MISPLACED_1:
+    cmp p2slotUsed1, 01h
+    je C2C_MISPLACED_2
+    mov al, p2color1
+
+    cmp p1slotUsed1, 01h
+    je C2C_G1_S2
     cmp al, p1color1
-    je C2C_S4_HIT
-    cmp al, p1color2
-    je C2C_S4_HIT
-    cmp al, p1color3
-    jne C2C_CHECK
-C2C_S4_HIT:
+    jne C2C_G1_S2
+    inc p2WrongPlacementCount
     inc p2CorrectColorCount
+    mov p1slotUsed1, 01h
+    jmp C2C_MISPLACED_2
+C2C_G1_S2:
+    cmp p1slotUsed2, 01h
+    je C2C_G1_S3
+    cmp al, p1color2
+    jne C2C_G1_S3
+    inc p2WrongPlacementCount
+    inc p2CorrectColorCount
+    mov p1slotUsed2, 01h
+    jmp C2C_MISPLACED_2
+C2C_G1_S3:
+    cmp p1slotUsed3, 01h
+    je C2C_G1_S4
+    cmp al, p1color3
+    jne C2C_G1_S4
+    inc p2WrongPlacementCount
+    inc p2CorrectColorCount
+    mov p1slotUsed3, 01h
+    jmp C2C_MISPLACED_2
+C2C_G1_S4:
+    cmp p1slotUsed4, 01h
+    je C2C_MISPLACED_2
+    cmp al, p1color4
+    jne C2C_MISPLACED_2
+    inc p2WrongPlacementCount
+    inc p2CorrectColorCount
+    mov p1slotUsed4, 01h
+
+C2C_MISPLACED_2:
+    cmp p2slotUsed2, 01h
+    je C2C_MISPLACED_3
+    mov al, p2color2
+
+    cmp p1slotUsed1, 01h
+    je C2C_G2_S2
+    cmp al, p1color1
+    jne C2C_G2_S2
+    inc p2WrongPlacementCount
+    inc p2CorrectColorCount
+    mov p1slotUsed1, 01h
+    jmp C2C_MISPLACED_3
+C2C_G2_S2:
+    cmp p1slotUsed2, 01h
+    je C2C_G2_S3
+    cmp al, p1color2
+    jne C2C_G2_S3
+    inc p2WrongPlacementCount
+    inc p2CorrectColorCount
+    mov p1slotUsed2, 01h
+    jmp C2C_MISPLACED_3
+C2C_G2_S3:
+    cmp p1slotUsed3, 01h
+    je C2C_G2_S4
+    cmp al, p1color3
+    jne C2C_G2_S4
+    inc p2WrongPlacementCount
+    inc p2CorrectColorCount
+    mov p1slotUsed3, 01h
+    jmp C2C_MISPLACED_3
+C2C_G2_S4:
+    cmp p1slotUsed4, 01h
+    je C2C_MISPLACED_3
+    cmp al, p1color4
+    jne C2C_MISPLACED_3
+    inc p2WrongPlacementCount
+    inc p2CorrectColorCount
+    mov p1slotUsed4, 01h
+
+C2C_MISPLACED_3:
+    cmp p2slotUsed3, 01h
+    je C2C_MISPLACED_4
+    mov al, p2color3
+
+    cmp p1slotUsed1, 01h
+    je C2C_G3_S2
+    cmp al, p1color1
+    jne C2C_G3_S2
+    inc p2WrongPlacementCount
+    inc p2CorrectColorCount
+    mov p1slotUsed1, 01h
+    jmp C2C_MISPLACED_4
+C2C_G3_S2:
+    cmp p1slotUsed2, 01h
+    je C2C_G3_S3
+    cmp al, p1color2
+    jne C2C_G3_S3
+    inc p2WrongPlacementCount
+    inc p2CorrectColorCount
+    mov p1slotUsed2, 01h
+    jmp C2C_MISPLACED_4
+C2C_G3_S3:
+    cmp p1slotUsed3, 01h
+    je C2C_G3_S4
+    cmp al, p1color3
+    jne C2C_G3_S4
+    inc p2WrongPlacementCount
+    inc p2CorrectColorCount
+    mov p1slotUsed3, 01h
+    jmp C2C_MISPLACED_4
+C2C_G3_S4:
+    cmp p1slotUsed4, 01h
+    je C2C_MISPLACED_4
+    cmp al, p1color4
+    jne C2C_MISPLACED_4
+    inc p2WrongPlacementCount
+    inc p2CorrectColorCount
+    mov p1slotUsed4, 01h
+
+C2C_MISPLACED_4:
+    cmp p2slotUsed4, 01h
+    je C2C_CHECK
+    mov al, p2color4
+
+    cmp p1slotUsed1, 01h
+    je C2C_G4_S2
+    cmp al, p1color1
+    jne C2C_G4_S2
+    inc p2WrongPlacementCount
+    inc p2CorrectColorCount
+    mov p1slotUsed1, 01h
+    jmp C2C_CHECK
+C2C_G4_S2:
+    cmp p1slotUsed2, 01h
+    je C2C_G4_S3
+    cmp al, p1color2
+    jne C2C_G4_S3
+    inc p2WrongPlacementCount
+    inc p2CorrectColorCount
+    mov p1slotUsed2, 01h
+    jmp C2C_CHECK
+C2C_G4_S3:
+    cmp p1slotUsed3, 01h
+    je C2C_G4_S4
+    cmp al, p1color3
+    jne C2C_G4_S4
+    inc p2WrongPlacementCount
+    inc p2CorrectColorCount
+    mov p1slotUsed3, 01h
+    jmp C2C_CHECK
+C2C_G4_S4:
+    cmp p1slotUsed4, 01h
+    je C2C_CHECK
+    cmp al, p1color4
+    jne C2C_CHECK
+    inc p2WrongPlacementCount
+    inc p2CorrectColorCount
+    mov p1slotUsed4, 01h
 
 ; ---- Win conditions ---- 
 C2C_CHECK:
     cmp p2CorrectPlacementCount, 04h
     je C2C_P2_WIN
-
-    mov al, p2CorrectColorCount
-    sub al, p2CorrectPlacementCount
-    mov p2WrongPlacementCount, al
 
     mov al, p2TryCount
     cmp al, maxTries
