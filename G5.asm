@@ -30,6 +30,18 @@
     p1winStat2 db 'Exact: $'
     p1winStat3 db 'Mispl: $'
 
+    ; =========================
+    ; PLAYER 2 WIN SCREEN STRINGS (from p2win.asm)
+    ; =========================
+    p2winMsg  db 'Player2 Wins!$'
+    p2winMsg2 db 'You have out-mastered$'
+    p2winMsg3 db 'the Mastermind$'
+    p2winMsg4 db '[SPACE] RESTART$'
+    p2winMsg5 db '[ESC]      QUIT$'
+    p2winStat1 db 'Tries: $'
+    p2winStat2 db 'Exact: $'
+    p2winStat3 db 'Mispl: $'
+
     ; Player 2 statistics display
     p2Trys db "Try/s: $"
     p2CorrectPlacement db "Exact placement: $"
@@ -472,6 +484,12 @@ DRAW_GAME_OVER_UI PROC
     call DRAW_P1_WIN_SCREEN
     ret
 DGO_NOT_P1WIN:
+    ; If Player 2 wins, show the full win splash screen instead
+    cmp winner, 02h
+    jne DGO_NOT_P2WIN
+    call DRAW_P2_WIN_SCREEN
+    ret
+DGO_NOT_P2WIN:
 
     ; clear instruction area
     mov bh, 30h
@@ -3043,5 +3061,1426 @@ DRAW_P1_WIN_SCREEN PROC
 
     ret
 DRAW_P1_WIN_SCREEN ENDP
+
+; =========================================================
+; DRAW_P2_WIN_SCREEN
+; Draws the full Player 2 win splash screen (from p2win.asm)
+; =========================================================
+DRAW_P2_WIN_SCREEN PROC
+    ; Set video mode 3 (80x25 color text)
+    mov ah, 00h
+    mov al, 03h
+    int 10h
+
+    ; Disable blink so all 16 colors work as backgrounds
+    mov ax, 1003h
+    mov bx, 0000h
+    int 10h
+
+    ; Hide cursor
+    mov ah, 01h
+    mov ch, 20h
+    mov cl, 00h
+    int 10h
+
+    ; --- Pixel data ---
+    ; row=0
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00000h
+    mov dx, 0004Fh
+    int 10h
+
+    ; row=1
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00100h
+    mov dx, 0014Fh
+    int 10h
+
+    ; row=2
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00200h
+    mov dx, 0024Fh
+    int 10h
+
+    ; row=3
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00300h
+    mov dx, 0034Fh
+    int 10h
+
+    ; row=4
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00400h
+    mov dx, 0044Fh
+    int 10h
+
+    ; row=5
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00500h
+    mov dx, 00509h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0050Ah
+    mov dx, 0050Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00510h
+    mov dx, 00523h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00524h
+    mov dx, 00529h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0052Ah
+    mov dx, 0054Fh
+    int 10h
+
+    ; row=6
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00600h
+    mov dx, 00607h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00608h
+    mov dx, 00609h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0060Ah
+    mov dx, 0060Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00610h
+    mov dx, 00611h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00612h
+    mov dx, 00621h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00622h
+    mov dx, 00623h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00624h
+    mov dx, 00629h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0062Ah
+    mov dx, 0062Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0062Ch
+    mov dx, 0064Fh
+    int 10h
+
+    ; row=7
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00700h
+    mov dx, 00707h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00708h
+    mov dx, 00709h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0070Ah
+    mov dx, 00711h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00712h
+    mov dx, 00721h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00722h
+    mov dx, 00729h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0072Ah
+    mov dx, 0072Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0072Ch
+    mov dx, 0074Fh
+    int 10h
+
+    ; row=8
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00800h
+    mov dx, 00805h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00806h
+    mov dx, 00807h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00808h
+    mov dx, 00815h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 070h
+    mov cx, 00816h
+    mov dx, 00817h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00818h
+    mov dx, 00819h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 070h
+    mov cx, 0081Ah
+    mov dx, 0081Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0081Ch
+    mov dx, 0081Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 070h
+    mov cx, 0081Eh
+    mov dx, 0081Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00820h
+    mov dx, 0082Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0082Ch
+    mov dx, 0082Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0082Eh
+    mov dx, 0084Fh
+    int 10h
+
+    ; row=9
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00900h
+    mov dx, 00905h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00906h
+    mov dx, 00907h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00908h
+    mov dx, 00915h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 070h
+    mov cx, 00916h
+    mov dx, 00917h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00918h
+    mov dx, 00919h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 070h
+    mov cx, 0091Ah
+    mov dx, 0091Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0091Ch
+    mov dx, 0091Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 070h
+    mov cx, 0091Eh
+    mov dx, 0091Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00920h
+    mov dx, 0092Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0092Ch
+    mov dx, 0092Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0092Eh
+    mov dx, 0094Fh
+    int 10h
+
+    ; row=10
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00A00h
+    mov dx, 00A03h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00A04h
+    mov dx, 00A2Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00A2Ch
+    mov dx, 00A2Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00A2Eh
+    mov dx, 00A31h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00A32h
+    mov dx, 00A35h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00A36h
+    mov dx, 00A4Fh
+    int 10h
+
+    ; row=11
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00B00h
+    mov dx, 00B03h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00B04h
+    mov dx, 00B07h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00B08h
+    mov dx, 00B2Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00B2Eh
+    mov dx, 00B31h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00B32h
+    mov dx, 00B4Fh
+    int 10h
+
+    ; row=12
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00C00h
+    mov dx, 00C09h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00C0Ah
+    mov dx, 00C0Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00C0Eh
+    mov dx, 00C13h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00C14h
+    mov dx, 00C15h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00C16h
+    mov dx, 00C19h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00C1Ah
+    mov dx, 00C1Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00C20h
+    mov dx, 00C21h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00C22h
+    mov dx, 00C23h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00C24h
+    mov dx, 00C25h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00C26h
+    mov dx, 00C29h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00C2Ah
+    mov dx, 00C4Fh
+    int 10h
+
+    ; row=13
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00D00h
+    mov dx, 00D07h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00D08h
+    mov dx, 00D09h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00D0Ah
+    mov dx, 00D0Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00D0Eh
+    mov dx, 00D13h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00D14h
+    mov dx, 00D19h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00D1Ah
+    mov dx, 00D1Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00D20h
+    mov dx, 00D23h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00D24h
+    mov dx, 00D25h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00D26h
+    mov dx, 00D29h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00D2Ah
+    mov dx, 00D2Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00D2Eh
+    mov dx, 00D35h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00D36h
+    mov dx, 00D4Fh
+    int 10h
+
+    ; row=14
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00E00h
+    mov dx, 00E17h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00E18h
+    mov dx, 00E19h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00E1Ah
+    mov dx, 00E1Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00E20h
+    mov dx, 00E21h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00E22h
+    mov dx, 00E2Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00E2Ch
+    mov dx, 00E2Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00E2Eh
+    mov dx, 00E4Fh
+    int 10h
+
+    ; row=15
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00F00h
+    mov dx, 00F05h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00F06h
+    mov dx, 00F07h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00F08h
+    mov dx, 00F09h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00F0Ah
+    mov dx, 00F0Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00F0Eh
+    mov dx, 00F17h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00F18h
+    mov dx, 00F19h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00F1Ah
+    mov dx, 00F1Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00F20h
+    mov dx, 00F21h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00F22h
+    mov dx, 00F2Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 00F2Ch
+    mov dx, 00F2Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 00F30h
+    mov dx, 00F4Fh
+    int 10h
+
+    ; row=16
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01000h
+    mov dx, 01005h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 01006h
+    mov dx, 01009h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0100Ah
+    mov dx, 0100Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0100Eh
+    mov dx, 0100Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01010h
+    mov dx, 01017h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 01018h
+    mov dx, 01019h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0101Ah
+    mov dx, 0101Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0101Eh
+    mov dx, 0101Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01020h
+    mov dx, 0102Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0102Ch
+    mov dx, 0102Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0102Eh
+    mov dx, 0102Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 01030h
+    mov dx, 01031h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01032h
+    mov dx, 0104Fh
+    int 10h
+
+    ; row=17
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01100h
+    mov dx, 01107h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 01108h
+    mov dx, 01109h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0110Ah
+    mov dx, 0110Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 01110h
+    mov dx, 01111h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01112h
+    mov dx, 01117h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 01118h
+    mov dx, 01119h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0111Ah
+    mov dx, 0111Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0111Eh
+    mov dx, 0111Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01120h
+    mov dx, 0112Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0112Ch
+    mov dx, 0112Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0112Eh
+    mov dx, 0112Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 01130h
+    mov dx, 01131h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01132h
+    mov dx, 0114Fh
+    int 10h
+
+    ; row=18
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01200h
+    mov dx, 01207h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 01208h
+    mov dx, 01209h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0120Ah
+    mov dx, 01211h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 01212h
+    mov dx, 01213h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01214h
+    mov dx, 01217h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 01218h
+    mov dx, 01219h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0121Ah
+    mov dx, 0121Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0121Eh
+    mov dx, 0121Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01220h
+    mov dx, 01227h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 01228h
+    mov dx, 0122Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0122Ch
+    mov dx, 0122Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 01230h
+    mov dx, 01231h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01232h
+    mov dx, 0124Fh
+    int 10h
+
+    ; row=19
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01300h
+    mov dx, 01309h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0130Ah
+    mov dx, 0130Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0130Ch
+    mov dx, 01313h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 01314h
+    mov dx, 01315h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01316h
+    mov dx, 01317h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 01318h
+    mov dx, 01319h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0131Ah
+    mov dx, 0131Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0131Ch
+    mov dx, 0131Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0131Eh
+    mov dx, 0131Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 01320h
+    mov dx, 01327h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01328h
+    mov dx, 0132Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0132Eh
+    mov dx, 0132Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01330h
+    mov dx, 0134Fh
+    int 10h
+
+    ; row=20
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01400h
+    mov dx, 0140Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0140Ch
+    mov dx, 0140Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0140Eh
+    mov dx, 01417h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 01418h
+    mov dx, 01419h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0141Ah
+    mov dx, 0141Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0141Ch
+    mov dx, 0141Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0141Eh
+    mov dx, 0142Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0142Ch
+    mov dx, 0142Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0142Eh
+    mov dx, 0144Fh
+    int 10h
+
+    ; row=21
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01500h
+    mov dx, 0150Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0150Ch
+    mov dx, 0150Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0150Eh
+    mov dx, 01519h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0151Ah
+    mov dx, 0151Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0151Ch
+    mov dx, 0152Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0152Eh
+    mov dx, 0152Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01530h
+    mov dx, 0154Fh
+    int 10h
+
+    ; row=22
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01600h
+    mov dx, 01609h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0160Ah
+    mov dx, 0160Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0160Ch
+    mov dx, 0162Dh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0162Eh
+    mov dx, 0162Fh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01630h
+    mov dx, 0164Fh
+    int 10h
+
+    ; row=23
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01700h
+    mov dx, 01709h
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 000h
+    mov cx, 0170Ah
+    mov dx, 0170Bh
+    int 10h
+
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 0170Ch
+    mov dx, 0174Fh
+    int 10h
+
+    ; row=24
+    mov ah, 06h
+    mov al, 00h
+    mov bh, 0F0h
+    mov cx, 01800h
+    mov dx, 0184Fh
+    int 10h
+
+    ;secret color code
+    ;square1
+    mov ah, 06h
+    mov al, 00h
+    mov bh, p1color1
+    mov cx, 0034Ah
+    mov dx, 0044Dh
+    int 10h
+
+    ;square2
+    mov ah, 06h
+    mov al, 00h
+    mov bh, p1color2
+    mov cx, 0064Ah
+    mov dx, 0074Dh
+    int 10h
+
+    ;square3
+    mov ah, 06h
+    mov al, 00h
+    mov bh, p1color3
+    mov cx, 0094Ah
+    mov dx, 00A4Dh
+    int 10h
+
+    ;square4
+    mov ah, 06h
+    mov al, 00h
+    mov bh, p1color4
+    mov cx, 00C4Ah
+    mov dx, 00D4Dh
+    int 10h
+
+    ; --- Print stats labels ---
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 06h
+    mov dl, 3Ch
+    int 10h
+    mov ah, 09h
+    lea dx, p2winStat1
+    int 21h
+
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 08h
+    mov dl, 3Ch
+    int 10h
+    mov ah, 09h
+    lea dx, p2winStat2
+    int 21h
+
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 0Ah
+    mov dl, 3Ch
+    int 10h
+    mov ah, 09h
+    lea dx, p2winStat3
+    int 21h
+
+    ; --- Print p2win messages ---
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 0Fh
+    mov dl, 39h
+    int 10h
+    mov ah, 09h
+    lea dx, p2winMsg
+    int 21h
+
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 10h
+    mov dl, 35h
+    int 10h
+    mov ah, 09h
+    lea dx, p2winMsg2
+    int 21h
+
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 11h
+    mov dl, 39h
+    int 10h
+    mov ah, 09h
+    lea dx, p2winMsg3
+    int 21h
+
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 13h
+    mov dl, 39h
+    int 10h
+    mov ah, 09h
+    lea dx, p2winMsg4
+    int 21h
+
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 14h
+    mov dl, 39h
+    int 10h
+    mov ah, 09h
+    lea dx, p2winMsg5
+    int 21h
+
+    ; --- Print live stats values ---
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 06h
+    mov dl, 43h
+    int 10h
+    mov al, p2TryCount
+    call PRINT_DECIMAL
+
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 08h
+    mov dl, 43h
+    int 10h
+    mov al, p2CorrectPlacementCount
+    call PRINT_DECIMAL
+
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, 0Ah
+    mov dl, 43h
+    int 10h
+    mov al, p2WrongPlacementCount
+    call PRINT_DECIMAL
+
+    ret
+DRAW_P2_WIN_SCREEN ENDP
 
 END start
